@@ -2308,7 +2308,7 @@ function mapClient(r) {
     telefone:r.telefone||'', site:r.site||'', obs:r.obs||'', cor:r.cor||'#3ddc84',
     dataEntrada:r.data_entrada||'', diaPagamento:r.dia_pagamento||'',
     formaPagamento:r.forma_pagamento||[], mktContacts:r.mkt_contacts||[],
-    finContacts:r.fin_contacts||[], accessEntries:r.access_entries||[], ativo:r.ativo!==falseh
+    finContacts:r.fin_contacts||[], accessEntries:r.access_entries||[], ativo:r.ativo??trueh
   };
 }
 function mapPost(r) {
