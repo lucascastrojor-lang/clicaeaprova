@@ -2794,7 +2794,7 @@ function updateClientTopbar() {
 // ═══════════════════════════════════════
 function renderClientsList(filter='') {
   const el = document.getElementById('clientsList');
-  const list = DB.clients.filter(c => c.nome.toLowerCase().includes(filter.toLowerCase()));
+  const list = DB.clients.filter(c => c.ativo !== false && c.nome.toLowerCase().includes(filter.toLowerCase()));
   el.innerHTML = list.map(c => {
     const ativo = c.ativo !== false;
     const count = DB.posts.filter(p => p.clienteId === c.id && p.status === 'pendente').length;
@@ -3536,7 +3536,7 @@ function renderDashboard() {
 
   // Pending
   const pendPosts = DB.posts.filter(p=>p.status==='pendente').slice(0,5);
-  document.getElementById('dashPendingList').innerHTML = pendPosts.length ?
+  document.getElementById('dashPendingList'); if(_dpEl) _dpEl.innerHTML = pendPosts.length ?
     pendPosts.map(p=>`<div class="pending-item">
       <div><div class="pending-item-title">${p.titulo}</div><div class="pending-item-client">${getClientName(p.clienteId)}</div></div>
       <div class="pending-item-date">${formatDate(p.data)}</div>
@@ -3550,7 +3550,7 @@ function renderDashboard() {
     const pd=new Date(y,m-1,d);
     return pd>=now&&pd<=in7&&p.status!=='reprovado'&&p.status!=='finalizado';
   });
-  document.getElementById('dashNext7').innerHTML = next7.length ?
+  document.getElementById('dashNext7'); if(_dn7El) _dn7El.innerHTML = next7.length ?
     next7.map(p=>`<div class="pending-item" style="border-left-color:var(--blue);">
       <div><div class="pending-item-title">${p.titulo}</div><div class="pending-item-client">${getClientName(p.clienteId)}</div></div>
       <div class="pending-item-date">${formatDate(p.data)}</div>
@@ -3558,7 +3558,7 @@ function renderDashboard() {
 
   // Recent
   const recent = [...DB.posts].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
-  document.getElementById('dashRecentPosts').innerHTML = recent.map(p=>`
+  document.getElementById('dashRecentPosts'); if(_drpEl) _drpEl.innerHTML = recent.map(p=>`
     <div class="recent-item">
       <div class="recent-thumb">${getThumb(p)?`<img src="${getThumb(p)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`:'🖼️'}</div>
       <div class="recent-info">
