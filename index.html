@@ -3884,7 +3884,7 @@ function editUser(userId) {
   document.getElementById('uMaxHorasDia').value = u.maxHorasDia||0;
   document.getElementById('senhaLabel').textContent = 'Nova senha (deixe em branco para não alterar)';
   document.getElementById('senhaSection').style.display = currentUserPerm === 'total' ? 'block' : 'none';
-  document.getElementById('userModalTitle').innerHTML = 'Editar Colaborador <span class="modal-close" onclick="closeModal(\'addUserModal\')">✕</span>';
+  document.getElementById('userModalTitle').innerHTML = 'Editar Colaborador <span class="modal-close" onhclick="closeModal(\'addUserModal\')">✕</span>';
   SECTIONS.forEach(s => {
     const el = document.getElementById(s.id);
     if (el) el.checked = (u.permSections||[]).includes(s.id);
@@ -3927,13 +3927,12 @@ async function saveUser() {
     client_ids: clientIds,
     ativo,
     force_password_change: forceChange,
-    meta_entregaveis: metaEntregaveis,
-    max_horas_dia: maxHorasDia
   };
   if (senha) sbData.senha_hash = senha;
 
   if (editId) {
     await sbUpdate('usuarios', editId, sbData);
+            showToast('Colaborador atualizado com sucesso!');
   } else {
     await sbInsert('usuarios', { ...sbData, senha_hash: senha });
     showToast(`Colaborador criado! Senha inicial definida.`);
