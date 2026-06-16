@@ -4810,6 +4810,12 @@ function renderSubtasks(d) {
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addObs('${s.id}')}">
           <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addObs('${s.id}')">↵</button>
         </div>`:''}
+      ${isTotal&&!s.done?`
+      <!-- SAVE BUTTON -->
+      <div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
+        <button class="btn btn-primary" style="font-size:12px;padding:7px 18px;display:flex;align-items:center;gap:6px;" onclick="saveSubtask('${s.id}')">&#x1F4BE; Salvar subtarefa</button>
+      </div>
+      `:''}
       </div>
 
     </div>`;
@@ -4880,7 +4886,10 @@ function saveBriefing(sid, el) {
   const d = wfDemands.find(x=>x.id===currentWfDemandId);
   if(!d) return;
   const s = d.subtarefas.find(x=>x.id===sid);
-  if(s) s.briefing = el.innerHTML;
+  if(!s) return;
+  s.briefing = el.innerHTML;
+  clearTimeout(window._briefingDebounce);
+  window._briefingDebounce = setTimeout(()=>saveSubtarefas(d), 800);
 }
 
 function execBriefingCmd(cmd, sid) {
@@ -4938,6 +4947,19 @@ function updateStField(sid, field, val) {
   if(!d) return;
   const s = d.subtarefas.find(x=>x.id===sid);
   if(s) s[field] = field==='artboards'?parseInt(val)||1:val;
+}
+
+async function saveSubtask(sid) {
+  const d = wfDemands.find(x=>x.id===currentWfDemandId);
+  if(!d) return;
+  // Capture any pending briefing editor content
+  const briefingEl = document.getElementById('briefing-'+sid);
+  const s = d.subtarefas.find(x=>x.id===sid);
+  if(s && briefingEl) s.briefing = briefingEl.innerHTML;
+  clearTimeout(window._briefingDebounce);
+  await saveSubtarefas(d);
+  showToast('Subtarefa salva com sucesso!');
+  renderWorkflow();
 }
 
 function updateStCaptacao(sid, field, val) {
