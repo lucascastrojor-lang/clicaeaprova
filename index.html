@@ -4313,7 +4313,7 @@ function socialIconsHtml(redes) {
 // WORKFLOW MODULE
 // ═══════════════════════════════════════
 
-const AREAS = { design:'Design Gráfico', social:'Social Media', av:'Audiovisual', atend:'Atendimento' };
+const AREAS = { design:'Design Gráfico', social:'Social Media', av:'Audiovisual', captacao:'Captação de Vídeo', edicao:'Edição de Vídeo', atend:'Atendimento' };
 const WF_COLS = [
   {id:'espera',   label:'Em espera',         color:'#4a5a72'},
   {id:'producao', label:'Em produção',        color:'#3b82f6'},
@@ -4645,7 +4645,8 @@ function renderSubtasks(d) {
   el.innerHTML = (d.subtarefas||[]).map((s,i)=>{
     const stateClass = s.done?'done':s.running?'running':'idle';
     const playIcon = s.done?'✓':s.running?'⏹':'▶';
-    const isAv = s.area==='av';
+    const isAv = s.area==='av' || s.area==='captacao';
+    const isEdicao = s.area==='edicao';
     const isDesign = s.area==='design';
     const days = getDaysLeft(d.dataEntrega);
     const isUrgent = days!==null && days<=2;
@@ -4674,7 +4675,7 @@ function renderSubtasks(d) {
         <div style="font-size:12.5px;color:var(--text-secondary);">${a.comentario}</div>
       </div>`).join('');
 
-    const borderColor = s.area==='av'?'var(--orange)':s.area==='design'?'var(--blue)':s.area==='social'?'var(--purple)':s.area==='atend'?'var(--green)':'var(--border)';
+    const borderColor = (s.area==='av'||s.area==='captacao'||s.area==='edicao')?'var(--orange)':s.area==='design'?'var(--blue)':s.area==='social'?'var(--purple)':s.area==='atend'?'var(--green)':'var(--border)';
 
     return `<div class="subtask-item${s.done?' subtask-done':''}" id="stItem-${s.id}" style="border-left:3px solid ${borderColor};">
 
@@ -4698,7 +4699,8 @@ function renderSubtasks(d) {
             <option value="">Selecione...</option>
             <option value="design" ${s.area==='design'?'selected':''}>🎨 Design Gráfico</option>
             <option value="social" ${s.area==='social'?'selected':''}>📱 Social Media</option>
-            <option value="av" ${s.area==='av'?'selected':''}>🎬 Audiovisual</option>
+            <option value="captacao" ${s.area==='captacao'||s.area==='av'?'selected':''}>📹 Captação de Vídeo</option>
+            <option value="edicao" ${s.area==='edicao'?'selected':''}>🎞️ Edição de Vídeo</option>
             <option value="atend" ${s.area==='atend'?'selected':''}>📞 Atendimento</option>
           </select>
         </div>
@@ -4744,6 +4746,46 @@ function renderSubtasks(d) {
         <div class="form-group"><label class="form-label">Endereço</label>
           <input class="form-input" placeholder="Rua..." value="${s.captacao?.endereco||''}" ${s.done?'readonly':''}
             oninput="updateStCaptacao('${s.id}','endereco',this.value)"></div>
+      </div>`:''}
+
+      ${s.area==='social'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div class="form-group"><label class="form-label">Tempo estimado</label>
+          <div class="form-input" style="color:var(--accent);font-weight:700;">20m 00s</div>
+        </div>
+        <div class="form-group"><label class="form-label" style="font-size:10px;color:var(--text-muted);">Base de cálculo</label>
+          <div class="form-input" style="font-size:11px;color:var(--text-muted);">20 min por briefing</div>
+        </div>
+      </div>`:''}
+
+      ${isEdicao?`<div style="margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div class="form-group"><label class="form-label">Tempo do vídeo — min</label>
+            <input class="form-input" type="number" min="0" placeholder="0"
+              value="${s.edicao?.minutos||0}" ${!isTotal||s.done?'readonly':''}
+              oninput="updateStEdicao('${s.id}','minutos',parseInt(this.value)||0)">
+          </div>
+          <div class="form-group"><label class="form-label">Tempo do vídeo — seg</label>
+            <input class="form-input" type="number" min="0" max="59" placeholder="0"
+              value="${s.edicao?.segundos||0}" ${!isTotal||s.done?'readonly':''}
+              oninput="updateStEdicao('${s.id}','segundos',parseInt(this.value)||0)">
+          </div>
+          <div class="form-group"><label class="form-label">Orientação</label>
+            <select class="form-input" ${!isTotal||s.done?'disabled':''}
+              onchange="updateStEdicao('${s.id}','orientacao',this.value)">
+              <option value="vertical" ${(s.edicao?.orientacao||'vertical')==='vertical'?'selected':''}>Vertical 9:16</option>
+              <option value="horizontal" ${s.edicao?.orientacao==='horizontal'?'selected':''}>Horizontal 16:9</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="form-group"><label class="form-label">Duração do vídeo</label>
+            <div class="form-input" style="color:var(--text-secondary);">${fmtTime(((s.edicao?.minutos||0)*60)+(s.edicao?.segundos||0))}</div>
+          </div>
+          <div class="form-group"><label class="form-label">Tempo estimado de edição</label>
+            <div class="form-input" id="stEstEdicao-${s.id}" style="color:var(--accent);font-weight:700;">${fmtTime(calcTempoEdicaoSecs(s.edicao?.minutos||0, s.edicao?.segundos||0))}</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Base: cada 30 segundos de vídeo = 1 hora de edição</div>
       </div>`:''}
 
       <!-- BRIEFING SECTION -->
@@ -4951,7 +4993,7 @@ async function addSubtask() {
     id:newId, nome:'Nova subtarefa', area:'', colaborador:'',
     briefing:'', running:false, done:false, tempo:0,
     startedAt:null, bloqueado:true,
-    artboards:1, tipoDesign:'', captacao:{data:'',horario:'',endereco:''},
+    artboards:1, tipoDesign:'', captacao:{data:'',horario:'',endereco:''}, edicao:{minutos:0,segundos:0,orientacao:'vertical'},
     referencias:[], observacoes:[],
     isAlteracao:false, versaoAtual:1, alteracoes:[]
   });
@@ -5002,6 +5044,26 @@ function updateStCaptacao(sid, field, val) {
   s.captacao[field] = val;
   // feed captação calendar if audiovisual
   renderWorkflow();
+}
+
+function updateStEdicao(sid, field, val) {
+  const d = wfDemands.find(x=>x.id===currentWfDemandId);
+  if(!d) return;
+  const s = d.subtarefas.find(x=>x.id===sid);
+  if(!s) return;
+  if(!s.edicao) s.edicao={minutos:0,segundos:0,orientacao:'vertical'};
+  s.edicao[field] = val;
+  // Update estimated time display
+  const estEl = document.getElementById('stEstEdicao-'+sid);
+  if(estEl) estEl.textContent = fmtTime(calcTempoEdicaoSecs(s.edicao.minutos||0, s.edicao.segundos||0));
+  saveSubtarefas(d);
+}
+
+function calcTempoEdicaoSecs(minutos, segundos) {
+  // Each 30 seconds of video = 1 hour of editing
+  const totalVideoSecs = (minutos * 60) + segundos;
+  const editingHours = totalVideoSecs / 30;
+  return Math.round(editingHours * 3600);
 }
 
 function showArtboardTooltip(btn) {
