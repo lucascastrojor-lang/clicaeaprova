@@ -2075,6 +2075,7 @@
         <label class="perm-check"><input type="checkbox" id="pRelatorios"> <span>📈 Relatórios</span></label>
         <label class="perm-check"><input type="checkbox" id="pEquipe"> <span>👥 Equipe</span></label>
         <label class="perm-check"><input type="checkbox" id="pHistorico"> <span>🕐 Histórico</span></label>
+        <label class="perm-check"><input type="checkbox" id="pWorkflow"> <span>🔀 Workflow</span></label>
       </div>
     </div>
 
@@ -2739,6 +2740,7 @@ async function switchDashTab(tabId) {
   if(tabId==='tabRelatorios') renderRelatorios();
   if(tabId==='tabVisaoGeral') renderVisaoGeral();
   if(tabId==='tabHistorico') renderHistorico();
+  if(tabId==='tabEquipe') renderEquipe();
 }
 
 async function openClient(clientId, keepMonth = false) {
@@ -3764,6 +3766,7 @@ const SECTIONS = [
   {id:'pRelatorios', label:'Relatórios'},
   {id:'pEquipe', label:'Equipe'},
   {id:'pHistorico', label:'Histórico'},
+  {id:'pWorkflow', label:'Workflow'},
 ];
 const EDIT_LABELS = {total:'Edição total', parcial:'Edição parcial', nenhum:'Somente leitura'};
 
@@ -4009,7 +4012,7 @@ async function toggleClienteAtivo(clientId, currentAtivo) {
 
 function buildClientPermList(selectedIds) {
   const wrap = document.getElementById('permClients');
-  wrap.innerHTML = DB.clients.map(c => `
+  wrap.innerHTML = DB.clients.filter(c=>c.ativo!==false).map(c => `
     <label class="perm-check" style="grid-column:span 1;">
       <input type="checkbox" name="clientPerm" value="${c.id}" ${selectedIds.includes(c.id)?'checked':''}>
       <span>${c.nome}</span>
@@ -4416,19 +4419,19 @@ function populateWfFilters() {
   const wfR = document.getElementById('wfFilterResp');
   if (wfC) {
     const cur = wfC.value;
-    wfC.innerHTML = '<option value="">Todos os clientes</option>' + DB.clients.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+    wfC.innerHTML = '<option value="">Todos os clientes</option>' + DB.clients.filter(c=>c.ativo!==false).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
     wfC.value = cur;
   }
   if (wfR) {
     const cur = wfR.value;
-    wfR.innerHTML = '<option value="">Todos os responsáveis</option>' + DB.users.map(u=>`<option>${u.nome}</option>`).join('');
+    wfR.innerHTML = '<option value="">Todos os responsáveis</option>' + DB.users.filter(u=>u.ativo!==false).map(u=>`<option>${u.nome}</option>`).join('');
     wfR.value = cur;
   }
   // Also populate wfCliente in modal
   const wfCm = document.getElementById('wfCliente');
-  if (wfCm) wfCm.innerHTML = '<option value="">Selecione...</option>' + DB.clients.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  if (wfCm) wfCm.innerHTML = '<option value="">Selecione...</option>' + DB.clients.filter(c=>c.ativo!==false).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
   const wfRm = document.getElementById('wfResponsavel');
-  if (wfRm) wfRm.innerHTML = '<option value="">Selecione...</option>' + DB.users.map(u=>`<option>${u.nome}</option>`).join('');
+  if (wfRm) wfRm.innerHTML = '<option value="">Selecione...</option>' + DB.users.filter(u=>u.ativo!==false).map(u=>`<option>${u.nome}</option>`).join('');
 }
 
 function getFilteredDemands() {
@@ -4675,7 +4678,7 @@ function renderSubtasks(d) {
     const isDesign = s.area==='design';
     const days = getDaysLeft(d.dataEntrega);
     const isUrgent = days!==null && days<=2;
-    const uList = DB.users.map(u=>`<option value="${u.nome}" ${u.nome===s.colaborador?'selected':''}>${u.nome}</option>`).join('');
+    const uList = DB.users.filter(u=>u.ativo!==false).map(u=>`<option value="${u.nome}" ${u.nome===s.colaborador?'selected':''}>${u.nome}</option>`).join('');
 
     // Briefing visibility rules:
     // - Total: always editable, can write briefing at any time
@@ -5548,7 +5551,7 @@ function populateFilterClientes() {
     const firstOpt=el.options[0];
     el.innerHTML='';
     el.appendChild(firstOpt||Object.assign(document.createElement('option'),{value:'',textContent:'Todos'}));
-    DB.clients.forEach(c=>{
+    DB.clients.filter(c=>c.ativo!==false).forEach(c=>{
       const o=document.createElement('option');
       o.value=c.nome; o.textContent=c.nome;
       el.appendChild(o);
