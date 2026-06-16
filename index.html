@@ -1067,9 +1067,22 @@
   .subtask-done .subtask-title { text-decoration: line-through; color: var(--text-muted); }
 
   .subtask-briefing {
-    margin-top: 12px; padding: 12px; background: var(--bg-card2);
+    margin-top: 12px; background: var(--bg-card2);
     border-radius: var(--radius-sm); border: 1px solid var(--border);
+    overflow: hidden;
   }
+  .briefing-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; cursor: pointer; user-select: none;
+    font-size: 11px; color: var(--text-muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .06em;
+    transition: background .15s;
+  }
+  .briefing-header:hover { background: var(--bg-hover); }
+  .briefing-header .briefing-toggle-icon { transition: transform .25s; font-size: 10px; }
+  .briefing-header.collapsed .briefing-toggle-icon { transform: rotate(-90deg); }
+  .briefing-body { padding: 12px; }
+  .briefing-body.hidden { display: none; }
   .briefing-toolbar {
     display: flex; gap: 4px; margin-bottom: 8px; padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
@@ -1125,8 +1138,9 @@
     box-shadow: 0 8px 32px rgba(0,0,0,.5);
     transform: translateY(-20px); opacity: 0;
     transition: all .3s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
   }
-  .wf-popup.show { transform: translateY(0); opacity: 1; }
+  .wf-popup.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
   .wf-popup-title { font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800; margin-bottom: 4px; color: var(--accent); }
   .wf-popup-body { font-size: 12px; color: var(--text-muted); }
 
@@ -4734,27 +4748,35 @@ function renderSubtasks(d) {
 
       <!-- BRIEFING SECTION -->
       <div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:8px;">
-          Briefing
-          ${isTotal&&!s.done?`<span style="font-size:9px;color:var(--accent);font-weight:400;text-transform:none;letter-spacing:0;">(somente admins editam)</span>`:''}
-        </div>
         ${isTotal?`
           <!-- ADMIN: always sees and can edit briefing -->
           <div class="subtask-briefing">
-            <div class="briefing-toolbar">
-              <button class="briefing-btn" onclick="execBriefingCmd('bold','${s.id}')"><b>B</b></button>
-              <button class="briefing-btn" onclick="execBriefingCmd('underline','${s.id}')"><u>U</u></button>
-              <button class="briefing-btn" onclick="execBriefingCmd('italic','${s.id}')"><i>I</i></button>
-              <button class="briefing-btn" onclick="execBriefingCmd('insertUnorderedList','${s.id}')">• Lista</button>
-              <button class="briefing-btn" onclick="execBriefingCmd('insertOrderedList','${s.id}')">1. Lista</button>
+            <div class="briefing-header" id="bh-${s.id}" onclick="toggleBriefing('${s.id}')">
+              <span>Briefing ${!s.done?'<span style="font-size:9px;color:var(--accent);font-weight:400;text-transform:none;letter-spacing:0;">(somente admins editam)</span>':''}</span>
+              <span class="briefing-toggle-icon">&#9660;</span>
             </div>
-            <div class="briefing-editor" id="briefing-${s.id}" contenteditable="${!s.done}"
-              oninput="saveBriefing('${s.id}',this)">${s.briefing||'<span style="color:var(--text-muted);">Escreva o briefing aqui...</span>'}</div>
+            <div class="briefing-body hidden" id="bb-${s.id}">
+              <div class="briefing-toolbar">
+                <button class="briefing-btn" onclick="execBriefingCmd('bold','${s.id}')"><b>B</b></button>
+                <button class="briefing-btn" onclick="execBriefingCmd('underline','${s.id}')"><u>U</u></button>
+                <button class="briefing-btn" onclick="execBriefingCmd('italic','${s.id}')"><i>I</i></button>
+                <button class="briefing-btn" onclick="execBriefingCmd('insertUnorderedList','${s.id}')">• Lista</button>
+                <button class="briefing-btn" onclick="execBriefingCmd('insertOrderedList','${s.id}')">1. Lista</button>
+              </div>
+              <div class="briefing-editor" id="briefing-${s.id}" contenteditable="${!s.done}"
+                oninput="saveBriefing('${s.id}',this)">${s.briefing||'<span style="color:var(--text-muted);">Escreva o briefing aqui...</span>'}</div>
+            </div>
           </div>`
         : s.running?`
           <!-- COLABORADOR: sees briefing only while running, read-only -->
           <div class="subtask-briefing">
-            <div class="briefing-editor" style="cursor:default;" id="briefing-${s.id}">${s.briefing||'<em style="color:var(--text-muted);">Nenhum briefing cadastrado.</em>'}</div>
+            <div class="briefing-header" id="bh-${s.id}" onclick="toggleBriefing('${s.id}')">
+              <span>Briefing</span>
+              <span class="briefing-toggle-icon">&#9660;</span>
+            </div>
+            <div class="briefing-body hidden" id="bb-${s.id}">
+              <div class="briefing-editor" style="cursor:default;" id="briefing-${s.id}">${s.briefing||'<em style="color:var(--text-muted);">Nenhum briefing cadastrado.</em>'}</div>
+            </div>
           </div>`
         : s.done?`
           <!-- COLABORADOR: after stop, briefing hidden -->
@@ -4890,6 +4912,15 @@ function saveBriefing(sid, el) {
   s.briefing = el.innerHTML;
   clearTimeout(window._briefingDebounce);
   window._briefingDebounce = setTimeout(()=>saveSubtarefas(d), 800);
+}
+
+function toggleBriefing(sid) {
+  const header = document.getElementById('bh-' + sid);
+  const body = document.getElementById('bb-' + sid);
+  if (!header || !body) return;
+  const isHidden = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !isHidden);
+  header.classList.toggle('collapsed', !isHidden);
 }
 
 function execBriefingCmd(cmd, sid) {
