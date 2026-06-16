@@ -2051,6 +2051,21 @@
       </label>
     </div>
 
+    <!-- Metas de trabalho -->
+    <div style="margin-bottom:16px;">
+      <div class="form-label" style="margin-bottom:10px;">Metas de trabalho</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Meta de entregáveis/mês</label>
+          <input class="form-input" type="number" min="0" id="uMetaEntregaveis" placeholder="Ex: 20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Máx. horas de trabalho/dia</label>
+          <input class="form-input" type="number" min="0" step="0.5" id="uMaxHorasDia" placeholder="Ex: 8">
+        </div>
+      </div>
+    </div>
+
     <!-- Acessos às seções -->
     <div style="margin-bottom:18px;">
       <div class="form-label" style="margin-bottom:10px;">Acesso às seções do painel</div>
@@ -2338,7 +2353,9 @@ function mapPost(r) {
 function mapUser(r) {
   return { id:r.id, nome:r.nome, email:r.email, cargo:r.cargo||'', area:r.area||'',
     editPerm:r.edit_perm||'nenhum', permSections:r.perm_sections||[],
-    clientIds:r.client_ids||[], createdAt:r.created_at?.split('T')[0]||''
+    clientIds:r.client_ids||[], createdAt:r.created_at?.split('T')[0]||'',
+    ativo:r.ativo!==false, forcePasswordChange:r.force_password_change||false,
+    metaEntregaveis:r.meta_entregaveis||0, maxHorasDia:r.max_horas_dia||0
   };
 }
 function mapHistory(r) {
@@ -3837,6 +3854,8 @@ function openAddUserModal() {
   document.getElementById('uForceChange').checked = true;
   document.getElementById('uAtivo').checked = true;
   document.getElementById('uArea').value = '';
+  document.getElementById('uMetaEntregaveis').value = '';
+  document.getElementById('uMaxHorasDia').value = '';
   document.getElementById('userModalTitle').innerHTML = 'Novo Colaborador <span class="modal-close" onclick="closeModal(\'addUserModal\')">✕</span>';
   document.getElementById('senhaLabel').textContent = 'Senha inicial';
   document.getElementById('senhaSection').style.display = 'block';
@@ -3858,6 +3877,8 @@ function editUser(userId) {
   document.getElementById('uForceChange').checked = false;
   document.getElementById('uAtivo').checked = u.ativo !== false;
   document.getElementById('uArea').value = u.area||'';
+  document.getElementById('uMetaEntregaveis').value = u.metaEntregaveis||0;
+  document.getElementById('uMaxHorasDia').value = u.maxHorasDia||0;
   document.getElementById('senhaLabel').textContent = 'Nova senha (deixe em branco para não alterar)';
   document.getElementById('senhaSection').style.display = currentUserPerm === 'total' ? 'block' : 'none';
   document.getElementById('userModalTitle').innerHTML = 'Editar Colaborador <span class="modal-close" onclick="closeModal(\'addUserModal\')">✕</span>';
@@ -3892,6 +3913,8 @@ async function saveUser() {
   const area = document.getElementById('uArea')?.value || '';
   const ativo = document.getElementById('uAtivo').checked;
   const forceChange = document.getElementById('uForceChange').checked;
+  const metaEntregaveis = parseInt(document.getElementById('uMetaEntregaveis')?.value)||0;
+  const maxHorasDia = parseFloat(document.getElementById('uMaxHorasDia')?.value)||0;
 
   showLoading('Salvando colaborador...');
   const sbData = {
@@ -3900,7 +3923,9 @@ async function saveUser() {
     perm_sections: permSections,
     client_ids: clientIds,
     ativo,
-    force_password_change: forceChange
+    force_password_change: forceChange,
+    meta_entregaveis: metaEntregaveis,
+    max_horas_dia: maxHorasDia
   };
   if (senha) sbData.senha_hash = senha;
 
@@ -4759,6 +4784,10 @@ function renderSubtasks(d) {
         <div class="form-group"><label class="form-label">Endereço</label>
           <input class="form-input" placeholder="Rua..." value="${s.captacao?.endereco||''}" ${s.done?'readonly':''}
             oninput="updateStCaptacao('${s.id}','endereco',this.value)"></div>
+      </div>
+      <div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;color:var(--text-muted);">Tempo estimado:</span>
+        <span style="font-size:13px;font-weight:700;color:var(--orange);">6 horas (captação)</span>
       </div>`:''}
 
       ${s.area==='social'?`<div style="margin-bottom:10px;">
@@ -5085,6 +5114,37 @@ function updateStEdicao(sid, field, val) {
   saveSubtarefas(d);
 }
 
+// Calculate total estimated seconds for a subtask (including alterations)
+function calcSubtaskEstSecs(s) {
+  const area = s.area || '';
+  let baseSecs = 0;
+  if (area === 'captacao') {
+    // Captação always = 6 hours
+    baseSecs = 6 * 3600;
+  } else if (area === 'edicao') {
+    const min = s.edicao?.minutos || 0;
+    const seg = s.edicao?.segundos || 0;
+    baseSecs = calcTempoEdicaoSecs(min, seg);
+  } else if (area === 'design') {
+    baseSecs = (s.artboards || 1) * 1800;
+  } else if (area === 'social') {
+    baseSecs = 1200; // 20 min fixed
+  } else if (area === 'av') {
+    // Legacy av = captacao
+    baseSecs = 6 * 3600;
+  }
+  // Add alteration time
+  const numAlteracoes = (s.alteracoes || []).length;
+  if (numAlteracoes > 0) {
+    if (area === 'design') {
+      baseSecs += numAlteracoes * 1800; // 30min per alteration for designer
+    } else if (area === 'edicao' || area === 'av') {
+      baseSecs += numAlteracoes * 3600; // 1h per alteration for video editing
+    }
+  }
+  return baseSecs;
+}
+
 function calcTempoEdicaoSecs(minutos, segundos) {
   // Each 1min10s (70 seconds) of video = 1 hour of editing
   const totalVideoSecs = (minutos * 60) + segundos;
@@ -5402,6 +5462,53 @@ function renderProfessionalDashboard() {
     {icon:'📅',title:'Próximos 7 dias',sub:'Demandas futuras na fila.',items:next7,color:'var(--blue)',full:true},
   ];
 
+  // ── Workload bars per collaborator ──
+  const todayStr = today;
+  // Collect all subtasks scheduled for today (with colaborador assigned)
+  const collabLoad = {};
+  wfDemands.forEach(d => {
+    if (!d.dataEntrega || d.status === 'cliente') return;
+    const [y,m,day] = d.dataEntrega.split('-').map(Number);
+    const dDate = new Date(y, m-1, day).toISOString().split('T')[0];
+    if (dDate !== todayStr) return;
+    (d.subtarefas || []).forEach(s => {
+      if (!s.colaborador || s.done) return;
+      const uid = s.colaborador;
+      if (!collabLoad[uid]) collabLoad[uid] = 0;
+      collabLoad[uid] += calcSubtaskEstSecs(s);
+    });
+  });
+
+  const workloadItems = DB.users.filter(u => u.ativo !== false && u.maxHorasDia > 0).map(u => {
+    const loadSecs = collabLoad[u.id] || 0;
+    const maxSecs = u.maxHorasDia * 3600;
+    const pct = maxSecs > 0 ? Math.min((loadSecs / maxSecs) * 100, 150) : 0;
+    const overSecs = loadSecs - maxSecs;
+    let barColor = 'var(--green)';
+    if (overSecs > 7200) barColor = 'var(--red)';       // >2h over → red
+    else if (overSecs > 0) barColor = 'var(--orange)';  // 0-2h over → yellow/orange
+    return { u, loadSecs, maxSecs, pct, barColor };
+  });
+  // Also include collaborators with load but no max set
+  Object.keys(collabLoad).forEach(uid => {
+    const u = DB.users.find(x=>x.id===uid);
+    if (!u || u.maxHorasDia > 0) return;
+    workloadItems.push({ u, loadSecs: collabLoad[uid], maxSecs: 0, pct: 100, barColor: 'var(--blue)' });
+  });
+
+  const workloadHtml = workloadItems.length > 0
+    ? workloadItems.map(({u, loadSecs, maxSecs, pct, barColor}) => `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:600;color:var(--text-primary);">${u.nome}</span>
+          <span style="font-size:12px;color:var(--text-secondary);">${fmtTime(loadSecs)}${maxSecs>0?' / '+fmtTime(maxSecs):''}</span>
+        </div>
+        <div style="background:var(--bg-input);border-radius:6px;height:10px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(pct,100)}%;background:${barColor};border-radius:6px;transition:width .3s;"></div>
+        </div>
+      </div>`).join('')
+    : '<div class="dash-pro-empty">Nenhum colaborador com carga hoje.</div>';
+
   const dashEl = document.getElementById('tabDashboard');
   if (!dashEl) return;
   dashEl.innerHTML = `<div class="dash-pro-grid">${sections.map(s=>`
@@ -5414,7 +5521,18 @@ function renderProfessionalDashboard() {
         </div>
       </div>
       ${renderProItems(s.items, s.color)}
-    </div>`).join('')}</div>`;
+    </div>`).join('')}
+    <div class="dash-pro-card" style="grid-column:span 2;">
+      <div class="dash-pro-card-header">
+        <div class="dash-pro-card-icon">👥</div>
+        <div>
+          <div class="dash-pro-card-title">Carga de trabalho hoje</div>
+          <div class="dash-pro-card-sub">Horas estimadas de cada colaborador com entregas para hoje</div>
+        </div>
+      </div>
+      ${workloadHtml}
+    </div>
+  </div>`;
 }
 
 function populateWfFilterCliente() { populateWfFilters(); }
