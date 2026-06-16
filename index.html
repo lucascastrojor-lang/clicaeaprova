@@ -4714,26 +4714,39 @@ function renderSubtasks(d) {
       </div>
 
       <!-- AREA-SPECIFIC FIELDS -->
-      ${isDesign?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
-        <div class="form-group"><label class="form-label">Tipo</label>
-          <select class="form-input" ${!isTotal||s.done?'disabled':''} onchange="updateStField('${s.id}','tipoDesign',this.value);renderSubtasks(wfDemands.find(x=>x.id===currentWfDemandId))">
-            <option value="" ${!s.tipoDesign?'selected':''}>Selecione</option>
-            <option value="digital" ${s.tipoDesign==='digital'?'selected':''}>Digital</option>
-            <option value="impressao" ${s.tipoDesign==='impressao'?'selected':''}>Impressão</option>
-          </select>
+      ${isDesign?`<div style="margin-bottom:10px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div class="form-group"><label class="form-label">Tipo</label>
+            <select class="form-input" ${!isTotal||s.done?'disabled':''} onchange="updateStField('${s.id}','tipoDesign',this.value);renderSubtasks(wfDemands.find(x=>x.id===currentWfDemandId))">
+              <option value="" ${!s.tipoDesign?'selected':''}>Selecione</option>
+              <option value="digital" ${s.tipoDesign==='digital'?'selected':''}>Digital</option>
+              <option value="impressao" ${s.tipoDesign==='impressao'?'selected':''}>Impressão</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display:flex;align-items:center;gap:4px;">
+              Nº de telas
+              <span style="cursor:pointer;color:var(--accent);font-size:11px;font-weight:800;background:var(--bg-hover);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"
+                onclick="showArtboardTooltip(this)">?</span>
+            </label>
+            <input class="form-input" type="number" min="1" value="${s.artboards||1}" ${!isTotal||s.done?'readonly':''}
+              oninput="updateStField('${s.id}','artboards',parseInt(this.value)||1);document.getElementById('stEst-${s.id}').textContent=fmtTime((parseInt(this.value)||1)*1800)">
+          </div>
+          <div class="form-group"><label class="form-label">Tempo estimado</label>
+            <div class="form-input" id="stEst-${s.id}" style="color:var(--accent);font-weight:700;">${fmtTime((s.artboards||1)*1800)}</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label" style="display:flex;align-items:center;gap:4px;">
-            Nº de telas
-            <span style="cursor:pointer;color:var(--accent);font-size:11px;font-weight:800;background:var(--bg-hover);border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"
-              onclick="showArtboardTooltip(this)">?</span>
-          </label>
-          <input class="form-input" type="number" min="1" value="${s.artboards||1}" ${!isTotal||s.done?'readonly':''}
-            oninput="updateStField('${s.id}','artboards',parseInt(this.value)||1);document.getElementById('stEst-${s.id}').textContent=fmtTime((parseInt(this.value)||1)*1800)">
-        </div>
-        <div class="form-group"><label class="form-label">Tempo estimado</label>
-          <div class="form-input" id="stEst-${s.id}" style="color:var(--accent);font-weight:700;">${fmtTime((s.artboards||1)*1800)}</div>
-        </div>
+        ${s.tipoDesign==='digital'?`<div style="margin-top:6px;">
+          <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Tipo de peça</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            ${['Instagram','Facebook','LinkedIn','TikTok','Youtube','E-mail Mkt','Whatsapp','Outros'].map(p=>`
+              <label style="display:flex;align-items:center;gap:4px;cursor:${!isTotal||s.done?'default':'pointer'};font-size:12px;color:var(--text-secondary);">
+                <input type="checkbox" ${(s.plataformas||[]).includes(p)?'checked':''} ${!isTotal||s.done?'disabled':''}
+                  style="accent-color:var(--accent);cursor:${!isTotal||s.done?'default':'pointer'};"
+                  onchange="togglePlataforma('${s.id}','${p}',this.checked)">${p}
+              </label>`).join('')}
+          </div>
+        </div>`:''}
       </div>`:''}
 
       ${isAv?`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
@@ -4748,12 +4761,15 @@ function renderSubtasks(d) {
             oninput="updateStCaptacao('${s.id}','endereco',this.value)"></div>
       </div>`:''}
 
-      ${s.area==='social'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-        <div class="form-group"><label class="form-label">Tempo estimado</label>
-          <div class="form-input" style="color:var(--accent);font-weight:700;">20m 00s</div>
-        </div>
-        <div class="form-group"><label class="form-label" style="font-size:10px;color:var(--text-muted);">Base de cálculo</label>
-          <div class="form-input" style="font-size:11px;color:var(--text-muted);">20 min por briefing</div>
+      ${s.area==='social'?`<div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Tipo de peça</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          ${['Instagram','Facebook','LinkedIn','TikTok','Youtube','E-mail Mkt','Whatsapp','Outros'].map(p=>`
+            <label style="display:flex;align-items:center;gap:4px;cursor:${!isTotal||s.done?'default':'pointer'};font-size:12px;color:var(--text-secondary);">
+              <input type="checkbox" ${(s.plataformas||[]).includes(p)?'checked':''} ${!isTotal||s.done?'disabled':''}
+                style="accent-color:var(--accent);cursor:${!isTotal||s.done?'default':'pointer'};"
+                onchange="togglePlataforma('${s.id}','${p}',this.checked)">${p}
+            </label>`).join('')}
         </div>
       </div>`:''}
 
@@ -4777,15 +4793,25 @@ function renderSubtasks(d) {
             </select>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div class="form-group"><label class="form-label">Duração do vídeo</label>
-            <div class="form-input" style="color:var(--text-secondary);">${fmtTime(((s.edicao?.minutos||0)*60)+(s.edicao?.segundos||0))}</div>
-          </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
           <div class="form-group"><label class="form-label">Tempo estimado de edição</label>
             <div class="form-input" id="stEstEdicao-${s.id}" style="color:var(--accent);font-weight:700;">${fmtTime(calcTempoEdicaoSecs(s.edicao?.minutos||0, s.edicao?.segundos||0))}</div>
           </div>
+          <div class="form-group"><label class="form-label" style="font-size:10px;color:var(--text-muted);">Base de cálculo</label>
+            <div class="form-input" style="font-size:11px;color:var(--text-muted);">cada 1min10s = 1h de edição</div>
+          </div>
         </div>
-        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Base: cada 1min10s de vídeo = 1 hora de edição</div>
+        <div style="margin-top:6px;">
+          <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Tipo de peça</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            ${['Instagram','Facebook','LinkedIn','TikTok','Youtube','Outros'].map(p=>`
+              <label style="display:flex;align-items:center;gap:4px;cursor:${!isTotal||s.done?'default':'pointer'};font-size:12px;color:var(--text-secondary);">
+                <input type="checkbox" ${(s.plataformas||[]).includes(p)?'checked':''} ${!isTotal||s.done?'disabled':''}
+                  style="accent-color:var(--accent);cursor:${!isTotal||s.done?'default':'pointer'};"
+                  onchange="togglePlataforma('${s.id}','${p}',this.checked)">${p}
+              </label>`).join('')}
+          </div>
+        </div>
       </div>`:''}
 
       <!-- BRIEFING SECTION -->
@@ -4993,7 +5019,7 @@ async function addSubtask() {
     id:newId, nome:'Nova subtarefa', area:'', colaborador:'',
     briefing:'', running:false, done:false, tempo:0,
     startedAt:null, bloqueado:true,
-    artboards:1, tipoDesign:'', captacao:{data:'',horario:'',endereco:''}, edicao:{minutos:0,segundos:0,orientacao:'vertical'},
+    artboards:1, tipoDesign:'', captacao:{data:'',horario:'',endereco:''}, edicao:{minutos:0,segundos:0,orientacao:'vertical'}, plataformas:[],
     referencias:[], observacoes:[],
     isAlteracao:false, versaoAtual:1, alteracoes:[]
   });
@@ -5065,6 +5091,20 @@ function calcTempoEdicaoSecs(minutos, segundos) {
   const editingHours = totalVideoSecs / 70;
   return Math.round(editingHours * 3600);
 }
+function togglePlataforma(sid, plataforma, checked) {
+  const d = wfDemands.find(x=>x.id===currentWfDemandId);
+  if(!d) return;
+  const s = d.subtarefas.find(x=>x.id===sid);
+  if(!s) return;
+  if(!s.plataformas) s.plataformas = [];
+  if(checked) {
+    if(!s.plataformas.includes(plataforma)) s.plataformas.push(plataforma);
+  } else {
+    s.plataformas = s.plataformas.filter(p => p !== plataforma);
+  }
+  saveSubtarefas(d);
+}
+
 
 function showArtboardTooltip(btn) {
   let tip = document.getElementById('artboardTip');
@@ -5137,6 +5177,11 @@ async function registrarAlteracao(sid) {
   showToast(`Alteração v${s.versaoAtual} registrada!`);
   renderSubtasks(d);
   renderWorkflow();
+  // Scroll to the updated subtask so user sees the new history entry
+  setTimeout(() => {
+    const el = document.getElementById('stItem-' + sid);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 80);
 }
 
 async function addObs(sid) {
