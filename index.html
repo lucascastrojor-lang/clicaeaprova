@@ -4785,7 +4785,7 @@ function renderSubtasks(d) {
             <div class="form-input" id="stEstEdicao-${s.id}" style="color:var(--accent);font-weight:700;">${fmtTime(calcTempoEdicaoSecs(s.edicao?.minutos||0, s.edicao?.segundos||0))}</div>
           </div>
         </div>
-        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Base: cada 30 segundos de vídeo = 1 hora de edição</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Base: cada 1min10s de vídeo = 1 hora de edição</div>
       </div>`:''}
 
       <!-- BRIEFING SECTION -->
@@ -5060,9 +5060,9 @@ function updateStEdicao(sid, field, val) {
 }
 
 function calcTempoEdicaoSecs(minutos, segundos) {
-  // Each 30 seconds of video = 1 hour of editing
+  // Each 1min10s (70 seconds) of video = 1 hour of editing
   const totalVideoSecs = (minutos * 60) + segundos;
-  const editingHours = totalVideoSecs / 30;
+  const editingHours = totalVideoSecs / 70;
   return Math.round(editingHours * 3600);
 }
 
