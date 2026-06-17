@@ -2647,8 +2647,19 @@ async function doLogin() {
   const ADMIN_PASS  = '123456';
   if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
     currentUserPerm = 'total';
-    currentUserName = 'Administrador';
-    currentUserId   = null;
+    try {
+      const adminUsers = await sbGet('usuarios', `select=id,nome&email=eq.${encodeURIComponent(email)}`);
+      if (adminUsers && adminUsers.length > 0) {
+        currentUserName = adminUsers[0].nome || 'Administrador';
+        currentUserId = adminUsers[0].id || null;
+      } else {
+        currentUserName = 'Administrador';
+        currentUserId = null;
+      }
+    } catch(e) {
+      currentUserName = 'Administrador';
+      currentUserId = null;
+    }
     document.getElementById('loginPage').classList.remove('show');
     document.getElementById('appShell').style.display = 'flex';
     await init();
@@ -4666,6 +4677,11 @@ async function wfChangeStatus(val) {
 }
 
 // ── SUBTASKS ──
+function getReopenButton(s) {
+  if (!s.done || !canReopenSubtask()) return '';
+  return '<button onclick="toggleSubtask(\'' + s.id + '\')" title="Reabrir subtarefa (continua a partir do tempo acumulado)" style="background:none;border:1px solid var(--border);color:var(--text-muted);font-size:10px;padding:2px 7px;border-radius:12px;cursor:pointer;transition:all .15s;margin-left:4px;" onmouseover=\"this.style.borderColor=\'var(--accent)\';this.style.color=\'var(--accent)\'" onmouseout=\"this.style.borderColor=\'var(--border)\';this.style.color=\'var(--text-muted)\'\">↺ Reabrir</button>';
+}
+
 function renderSubtasks(d) {
   const el = document.getElementById('wfSubtaskList');
   if (!el) return;
@@ -4716,7 +4732,7 @@ function renderSubtasks(d) {
           onchange="renameSt('${s.id}',this.value)"
           ${!isTotal||s.done?'readonly':''}
           title="${isTotal?'Clique para editar o nome':''}">
-        <div class="subtask-time" id="stTime-${s.id}">${fmtTime(s.tempo)}</div>
+        <div class="subtask-time" id="stTime-${s.id}">${fmtTime(s.tempo)}</div>${getReopenButton(s)}
         ${isUrgent?`<span class="wf-card-chip urgent" style="font-size:9px;padding:1px 6px;margin-left:4px;">🔴</span>`:''}
       </div>
 
@@ -4928,11 +4944,11 @@ function renderSubtasks(d) {
             <div style="color:var(--text-secondary);">${o.texto}</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:4px;">👤 ${o.autor} · ${o.dataHora}</div>
           </div>`).join('')}
-        ${!s.done?`<div style="display:flex;gap:6px;margin-top:6px;">
+        <div style="display:flex;gap:6px;margin-top:6px;">
           <input class="form-input" style="flex:1;" placeholder="Deixe uma observação..." id="obsInput-${s.id}"
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addObs('${s.id}')}">
           <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addObs('${s.id}')">↵</button>
-        </div>`:''}
+        </div>`
       ${isTotal&&!s.done?`
       <!-- SAVE BUTTON -->
       <div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
@@ -4963,7 +4979,7 @@ async function toggleSubtask(sid) {
     const elapsed = Math.floor((Date.now()-s.startedAt)/1000);
     s.tempo += elapsed; s.running = false; s.done = true; s.startedAt = null; s.bloqueado = false;
     await logHistory('Subtarefa concluída', getClientName(d.clienteId), `"${s.nome}" — Tempo: ${fmtTime(s.tempo)}`);
-    checkAllSubtasksDone(d);
+    await checkAllSubtasksDone(d);
   } else {
     d.subtarefas.forEach(x=>{ if(x.running){ x.tempo+=Math.floor((Date.now()-x.startedAt)/1000); x.running=false; x.startedAt=null; }});
     s.running = true; s.startedAt = Date.now(); s.bloqueado = false;
@@ -4985,9 +5001,10 @@ function tickSubtaskTimers(d) {
 
 function canReopenSubtask() { return currentUserPerm === 'total'; }
 
-function checkAllSubtasksDone(d) {
+async function checkAllSubtasksDone(d) {
   if(d.subtarefas.length>0 && d.subtarefas.every(s=>s.done)) {
     d.status = 'aprovacao';
+    await sbUpdate('workflow_demandas', d.id, { status: 'aprovacao' });
     const sel = document.getElementById('wfDpStatus');
     if (sel) sel.value = 'aprovacao';
     showWfPopup(d);
