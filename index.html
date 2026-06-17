@@ -4948,7 +4948,7 @@ function renderSubtasks(d) {
           <input class="form-input" style="flex:1;" placeholder="Deixe uma observação..." id="obsInput-${s.id}"
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addObs('${s.id}')}">
           <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addObs('${s.id}')">↵</button>
-        </div>`
+        </div>
       ${isTotal&&!s.done?`
       <!-- SAVE BUTTON -->
       <div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
