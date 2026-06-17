@@ -13,7 +13,7 @@
     --bg-base: #0a0e1a;
     --bg-card: #111827;
     --bg-card2: #161d2e;
-    --bg-input: #1a2235;
+    --bg-input: #1a2235;h
     --bg-hover: #1e2a40;
     --border: #1e2d4a;
     --border-light: #243352;
@@ -3927,6 +3927,8 @@ async function saveUser() {
     client_ids: clientIds,
     ativo,
     force_password_change: forceChange,
+    meta_entregaveis: metaEntregaveis,
+    max_horas_dia: maxHorasDia,
   };
   if (senha) sbData.senha_hash = senha;
 
