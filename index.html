@@ -2662,6 +2662,7 @@ async function doLogin() {
     }
     document.getElementById('loginPage').classList.remove('show');
     document.getElementById('appShell').style.display = 'flex';
+    updateUserBadge();
     await init();
     return;
   }
@@ -2685,6 +2686,7 @@ async function doLogin() {
     currentUserId   = user.id;
     document.getElementById('loginPage').classList.remove('show');
     document.getElementById('appShell').style.display = 'flex';
+    updateUserBadge();
     await init();
     if (user.force_password_change) {
       setTimeout(() => {
