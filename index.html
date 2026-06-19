@@ -2404,19 +2404,47 @@ async function logHistory(acao, clienteNome, detalhe, usuarioNome) {
   DB.history.unshift({ id:'local-'+Date.now(), action:acao, client:clienteNome, detail:detalhe, user:usuarioNome||currentUserName, date:new Date().toISOString() });
 }
 
+function applyUserPermissions() {
+    const s = currentUserPermSections || [];
+      const isTotal = currentUserPerm === 'total';
+        const navDash = document.getElementById('nav-dashboard');
+          if (navDash) navDash.style.display = (isTotal || s.includes('pDashboard')) ? '' : 'none';
+            const dtDash = document.getElementById('dt-tabDashboard');
+              if (dtDash) dtDash.style.display = (isTotal || s.includes('pDashboard')) ? '' : 'none';
+                const dtVisao = document.getElementById('dt-tabVisaoGeral');
+                  if (dtVisao) dtVisao.style.display = (isTotal || s.includes('pVisaoGeral')) ? '' : 'none';
+                    const dtRelat = document.getElementById('dt-tabRelatorios');
+                      if (dtRelat) dtRelat.style.display = (isTotal || s.includes('pRelatorios')) ? '' : 'none';
+                        const dtEquipe = document.getElementById('dt-tabEquipe');
+                          if (dtEquipe) dtEquipe.style.display = (isTotal || s.includes('pEquipe')) ? '' : 'none';
+                            const dtHist = document.getElementById('dt-tabHistorico');
+                              if (dtHist) dtHist.style.display = (isTotal || s.includes('pHistorico')) ? '' : 'none';
+                                const wfEditBtn = document.querySelector('#wfDetailPanel .wf-detail-footer button[onclick="openEditDemand()"]');
+                                  const wfDelBtn = document.querySelector('#wfDetailPanel .wf-detail-footer button[onclick="deleteWfDemand()"]');
+                                    if (wfEditBtn) wfEditBtn.style.display = isTotal ? '' : 'none';
+                                      if (wfDelBtn) wfDelBtn.style.display = isTotal ? '' : 'none';
+                                        if (!isTotal && !s.includes('pDashboard') && s.includes('pWorkflow')) {
+                                            setTimeout(() => switchToWorkflow(), 100);
+                                              }
+                                              }
+}
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
 async function init() {
   await loadAllData();
   restoreLogos();
+    applyUserPermissions();
   renderClientsList();
-  renderDashboard();
-  renderProfessionalDashboard();
-  renderEquipe();
-  renderHistorico();
-  renderVisaoGeral();
-  renderRelatorios();
+  if (currentUserPermSections.includes('pDashboard') || currentUserPerm === 'total') {
+        renderDashboard();
+            renderProfessionalDashboard();
+              }
+                if (currentUserPermSections.includes('pEquipe') || currentUserPerm === 'total') { renderEquipe(); }
+                  if (currentUserPermSections.includes('pHistorico') || currentUserPerm === 'total') { renderHistorico(); }
+                    if (currentUserPermSections.includes('pVisaoGeral') || currentUserPerm === 'total') { renderVisaoGeral(); }
+                      if (currentUserPermSections.includes('pRelatorios') || currentUserPerm === 'total') { renderRelatorios(); }
+  }
   populateFilterClientes();
   populateWfFilters();
   setCurrentMonthDefaults();
@@ -2636,6 +2664,7 @@ function onTipoChange(sel) {
 let currentUserPerm = 'total';
 let currentUserName = 'Admin';
 let currentUserId = null;
+let currentUserPermSections = [];
 
 async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -2684,6 +2713,7 @@ async function doLogin() {
     currentUserPerm = user.edit_perm || 'total';
     currentUserName = user.nome;
     currentUserId   = user.id;
+        currentUserPermSections = user.perm_sections || [];
     document.getElementById('loginPage').classList.remove('show');
     document.getElementById('appShell').style.display = 'flex';
     updateUserBadge();
@@ -5387,6 +5417,7 @@ async function saveWfDemand() {
 function onWfAreaChange() {}
 
 async function deleteWfDemand() {
+    if (currentUserPerm !== 'total') { alert('Você não tem permissão para excluir demandas.'); return; }
   if(!confirm('Excluir esta demanda?')) return;
   showLoading('Excluindo...');
   await sbDelete('workflow_demandas', currentWfDemandId);
