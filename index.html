@@ -2421,13 +2421,12 @@ function applyUserPermissions() {
                               if (dtHist) dtHist.style.display = (isTotal || s.includes('pHistorico')) ? '' : 'none';
                                 const wfEditBtn = document.querySelector('#wfDetailPanel .wf-detail-footer button[onclick="openEditDemand()"]');
                                   const wfDelBtn = document.querySelector('#wfDetailPanel .wf-detail-footer button[onclick="deleteWfDemand()"]');
-                                    if (wfEditBtn) wfEditBtn.style.display = isTotal ? '' : 'none';
+                                    if (wfEditBtn) wfEditBtn.style.dhisplay = isTotal ? '' : 'none';
                                       if (wfDelBtn) wfDelBtn.style.display = isTotal ? '' : 'none';
                                         if (!isTotal && !s.includes('pDashboard') && s.includes('pWorkflow')) {
                                             setTimeout(() => switchToWorkflow(), 100);
                                               }
                                               }
-}
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
