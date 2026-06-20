@@ -13,7 +13,7 @@
     --bg-base: #0a0e1a;
     --bg-card: #111827;
     --bg-card2: #161d2e;
-    --bg-input: #1a2235;h
+    --bg-input: #1a2235;
     --bg-hover: #1e2a40;
     --border: #1e2d4a;
     --border-light: #243352;
@@ -2700,7 +2700,7 @@ async function doLogin() {
     const users = await sbGet('usuarios', `select=*&email=eq.${encodeURIComponent(email)}&ativo=eq.true`);
     hideLoading();
     if (!users || users.length === 0) {
-      alert('Usuário não encontrado.\n\nAdmin: ' + ADMIN_EMAIL + ' / ' + ADMIN_PASS);
+            alert('Usuário não encontrado. Verifique o e-mail e tente novamente.');
       return;
     }
     const user = users[0];
@@ -2711,7 +2711,7 @@ async function doLogin() {
     currentUserPerm = user.edit_perm || 'total';
     currentUserName = user.nome;
     currentUserId   = user.id;
-        currentUserPermSections = user.perm_sections || [];
+    currentUserPermSections = user.perm_sections || [];
     document.getElementById('loginPage').classList.remove('show');
     document.getElementById('appShell').style.display = 'flex';
     updateUserBadge();
@@ -3993,7 +3993,7 @@ function openChangePassword(userId) {
   document.getElementById('cpUserName').textContent = `Alterando senha de: ${u.nome} (${u.email})`;
   document.getElementById('cpNovaSenha').value = '';
   document.getElementById('cpConfirm').value = '';
-  document.getElementById('cpForceChange').checked = true;
+  document.getElementById('cpForceChange').checked = false;
   closeModal('addUserModal');
   openModal('changePassModal');
 }
@@ -4018,6 +4018,7 @@ async function saveForcedPassword() {
   const confirm = document.getElementById('fcpConfirm').value;
   if (!nova || nova.length < 6) return showToast('A senha deve ter pelo menos 6 caracteres.', true);
   if (nova !== confirm) return showToast('As senhas não coincidem.', true);
+    if (!currentUserId) return showToast('Erro: sessão expirada. Faça login novamente.', true);
   showLoading('Salvando nova senha...');
   await sbUpdate('usuarios', currentUserId, { senha_hash: nova, force_password_change: false });
   document.getElementById('forceChangePassModal').classList.remove('open');
