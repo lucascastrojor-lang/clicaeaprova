@@ -1163,6 +1163,62 @@
   }
   .kanban-cards.drag-over .kanban-lane-drop-label { display:block; }
 
+  /* ── CAIXA DE ENTRADA ── */
+  .inbox-card {
+    background: var(--bg-card2); border: 1px solid rgba(61,220,132,.25);
+    border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px;
+  }
+  .inbox-title {
+    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+    color: var(--accent); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .inbox-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .inbox-item-info { flex: 1; min-width: 0; }
+  .inbox-item-nome { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .inbox-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .btn-gerar-job {
+    background: var(--accent); color: #000; border: none; border-radius: var(--radius-sm);
+    padding: 7px 16px; font-size: 12px; font-weight: 800; cursor: pointer;
+    font-family: inherit; transition: background .15s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-gerar-job:hover { background: var(--accent-dim); }
+  .inbox-empty { font-size: 12px; color: var(--text-muted); text-align: center; padding: 16px 0; }
+
+  /* ── METRICAS BIG NUMBERS ── */
+  .metrics-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px;
+  }
+  .metric-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 18px;
+  }
+  .metric-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .metric-value { font-family: 'Nunito', sans-serif; font-size: 36px; font-weight: 900; line-height: 1; }
+
+  /* ── ANALYTICS SECTION ── */
+  .analytics-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .analytics-tab {
+    padding: 8px 18px; cursor: pointer; font-size: 13px; font-weight: 600;
+    color: var(--text-muted); border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: color .15s, border-color .15s;
+  }
+  .analytics-tab:hover { color: var(--text-primary); }
+  .analytics-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .analytics-pane { display: none; }
+  .analytics-pane.active { display: block; }
+  .analytics-big-numbers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .analytics-bn { background: var(--bg-card2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; text-align: center; }
+  .analytics-bn-val { font-family: 'Nunito', sans-serif; font-size: 32px; font-weight: 900; }
+  .analytics-bn-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .analytics-obs-item { background: var(--bg-input); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; font-size: 12.5px; }
+  .analytics-obs-task { font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .06em; }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg-base); }
@@ -1315,14 +1371,8 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </div>
-      <div class="tab" onclick="switchDashTab('tabVisaoGeral')" id="dt-tabVisaoGeral">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-        Visão Geral
-      </div>
-      <div class="tab" onclick="switchDashTab('tabRelatorios')" id="dt-tabRelatorios">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Relatórios
-      </div>
+
+
       <div class="tab" onclick="switchDashTab('tabEquipe')" id="dt-tabEquipe">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         Equipe
@@ -1407,93 +1457,6 @@
             Estatísticas por Tipo
           </div>
           <div id="dashByType"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VISÃO GERAL TAB -->
-    <div class="page" id="tabVisaoGeral">
-      <div class="stats-grid" style="grid-template-columns:1fr 1fr 1fr;">
-        <div class="stat-card"><div class="stat-label">Posts Cadastrados</div><div class="stat-value" id="vgTotal">—</div></div>
-        <div class="stat-card"><div class="stat-label">Aprovados</div><div class="stat-value green" id="vgAprov">—</div></div>
-        <div class="stat-card"><div class="stat-label">Reprovados</div><div class="stat-value red" id="vgReprov">—</div></div>
-      </div>
-      <div class="card mt-14">
-        <div class="section-header">
-          <div class="section-title">Calendário de conteúdos (Geral)</div>
-          <div class="filters-bar" style="margin:0;">
-            <select class="filter-select" onchange="filterVisaoGeral()" id="vgFilterStatus">
-              <option value="">Todos os status</option>
-              <option value="pendente">Pendente</option>
-              <option value="aprovado">Aprovado</option>
-              <option value="reprovado">Reprovado</option>
-              <option value="finalizado">Finalizado</option>
-            </select>
-            <select class="filter-select" onchange="filterVisaoGeral()" id="vgFilterCliente">
-              <option value="">Todos os clientes</option>
-            </select>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th onclick="sortVisao('data')">Data ↑↓</th>
-                <th>Mídia</th>
-                <th onclick="sortVisao('cliente')">Cliente ↑↓</th>
-                <th onclick="sortVisao('titulo')">Título ↑↓</th>
-                <th onclick="sortVisao('tipo')">Tipo ↑↓</th>
-                <th>Status</th>
-                <th>Agendado</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="visaoGeralBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- RELATÓRIOS TAB -->
-    <div class="page" id="tabRelatorios">
-      <div class="section-header">
-        <div class="section-title">Relatórios</div>
-        <button class="btn btn-primary" onclick="exportCSV()">⬇ Exportar CSV</button>
-      </div>
-      <div class="card" style="margin-bottom:14px;">
-        <div class="filters-bar">
-          <select class="filter-select" id="rCliente"><option value="">Todos os Clientes</option></select>
-          <select class="filter-select" id="rRedeSocial"><option value="">Todas</option><option>Facebook</option><option>Instagram</option><option>LinkedIn</option><option>YouTube</option><option>TikTok</option></select>
-          <select class="filter-select" id="rTipo"><option value="">Todos os Tipos</option><option>Feed</option><option>Story</option><option>Carrossel</option><option>Reels</option></select>
-          <select class="filter-select" id="rStatus"><option value="">Todos</option><option value="pendente">Pendente</option><option value="aprovado">Aprovado</option><option value="reprovado">Reprovado</option><option value="finalizado">Finalizado</option></select>
-          <input type="date" class="filter-select" id="rDataInicio" placeholder="Data início">
-          <input type="date" class="filter-select" id="rDataFim" placeholder="Data fim">
-          <button class="btn btn-primary" onclick="applyReportFilters()">Aplicar Filtros</button>
-        </div>
-      </div>
-      <div class="report-stats" style="grid-template-columns:repeat(5,1fr);">
-        <div class="stat-card"><div class="stat-label">Total de Posts</div><div class="stat-value" id="rTotal">—</div></div>
-        <div class="stat-card"><div class="stat-label">Aprovados</div><div class="stat-value green" id="rAprov">—</div></div>
-        <div class="stat-card"><div class="stat-label">Reprovados</div><div class="stat-value red" id="rReprov">—</div></div>
-        <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-value orange" id="rPend">—</div></div>
-        <div class="stat-card"><div class="stat-label">Finalizados</div><div class="stat-value" style="color:#818cf8;" id="rFinal">—</div></div>
-      </div>
-      <div class="report-grids">
-        <div class="card">
-          <div class="widget-title">Por Tipo</div>
-          <div id="rByTipo"></div>
-        </div>
-        <div class="card">
-          <div class="widget-title">Por Rede Social</div>
-          <div id="rByRede"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Data</th><th>Título</th><th>Versão</th><th>Tipo</th><th>Redes</th><th>Status</th><th>Data Status</th></tr></thead>
-            <tbody id="relatorioBody"></tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -2071,8 +2034,7 @@
       <div class="form-label" style="margin-bottom:10px;">Acesso às seções do painel</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="permSections">
         <label class="perm-check"><input type="checkbox" id="pDashboard"> <span>📊 Dashboard</span></label>
-        <label class="perm-check"><input type="checkbox" id="pVisaoGeral"> <span>📋 Visão Geral</span></label>
-        <label class="perm-check"><input type="checkbox" id="pRelatorios"> <span>📈 Relatórios</span></label>
+
         <label class="perm-check"><input type="checkbox" id="pEquipe"> <span>👥 Equipe</span></label>
         <label class="perm-check"><input type="checkbox" id="pHistorico"> <span>🕐 Histórico</span></label>
         <label class="perm-check"><input type="checkbox" id="pWorkflow"> <span>🔀 Workflow</span></label>
@@ -2411,10 +2373,7 @@ function applyUserPermissions() {
           if (navDash) navDash.style.display = (isTotal || s.includes('pDashboard')) ? '' : 'none';
             const dtDash = document.getElementById('dt-tabDashboard');
               if (dtDash) dtDash.style.display = (isTotal || s.includes('pDashboard')) ? '' : 'none';
-                const dtVisao = document.getElementById('dt-tabVisaoGeral');
-                  if (dtVisao) dtVisao.style.display = (isTotal || s.includes('pVisaoGeral')) ? '' : 'none';
-                    const dtRelat = document.getElementById('dt-tabRelatorios');
-                      if (dtRelat) dtRelat.style.display = (isTotal || s.includes('pRelatorios')) ? '' : 'none';
+
                         const dtEquipe = document.getElementById('dt-tabEquipe');
                           if (dtEquipe) dtEquipe.style.display = (isTotal || s.includes('pEquipe')) ? '' : 'none';
                             const dtHist = document.getElementById('dt-tabHistorico');
@@ -2441,8 +2400,8 @@ async function init() {
               }
                 if (currentUserPermSections.includes('pEquipe') || currentUserPerm === 'total') { renderEquipe(); }
                   if (currentUserPermSections.includes('pHistorico') || currentUserPerm === 'total') { renderHistorico(); }
-                    if (currentUserPermSections.includes('pVisaoGeral') || currentUserPerm === 'total') { renderVisaoGeral(); }
-                      if (currentUserPermSections.includes('pRelatorios') || currentUserPerm === 'total') { renderRelatorios(); }
+    
+
   populateFilterClientes();
   populateWfFilters();
   setCurrentMonthDefaults();
@@ -2778,8 +2737,7 @@ async function switchDashTab(tabId) {
   if(tabId==='tabRelatorios' || tabId==='tabVisaoGeral' || tabId==='tabHistorico') {
     try { await loadAllData(); } finally { hideLoading(); }
   }
-  if(tabId==='tabRelatorios') renderRelatorios();
-  if(tabId==='tabVisaoGeral') renderVisaoGeral();
+
   if(tabId==='tabHistorico') renderHistorico();
   if(tabId==='tabEquipe') renderEquipe();
 }
@@ -3611,10 +3569,16 @@ function renderDashboard() {
   // Pending
   const pendPosts = DB.posts.filter(p=>p.status==='pendente').slice(0,5);
 const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) _dpEl.innerHTML = pendPosts.length ?
-    pendPosts.map(p=>`<div class="pending-item">
-      <div><div class="pending-item-title">${p.titulo}</div><div class="pending-item-client">${getClientName(p.clienteId)}</div></div>
-      <div class="pending-item-date">${formatDate(p.data)}</div>
-    </div>`).join('') : '<div class="text-muted" style="text-align:center;padding:20px;">Nenhum conteúdo pendente</div>';
+    pendPosts.map(p=>{
+      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
+      return `<div class="pending-item">
+        <div style="flex:1;">
+          <div class="pending-item-title">${p.titulo}</div>
+          <div class="pending-item-client">${getClientName(p.clienteId)} · <span style="color:var(--accent);font-size:10px;">👤 ${resp}</span></div>
+        </div>
+        <div class="pending-item-date">${formatDate(p.data)}</div>
+      </div>`;
+    }).join('') : '<div class="text-muted" style="text-align:center;padding:20px;">Nenhum conteúdo pendente</div>';
 
   // Next 7 days
   const now = new Date(); const in7 = new Date(now); in7.setDate(in7.getDate()+7);
@@ -3625,10 +3589,16 @@ const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) _dpEl.inne
     return pd>=now&&pd<=in7&&p.status!=='reprovado'&&p.status!=='finalizado';
   });
 const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) _dn7El.innerHTML = next7.length ?
-    next7.map(p=>`<div class="pending-item" style="border-left-color:var(--blue);">
-      <div><div class="pending-item-title">${p.titulo}</div><div class="pending-item-client">${getClientName(p.clienteId)}</div></div>
-      <div class="pending-item-date">${formatDate(p.data)}</div>
-    </div>`).join('') : '<div class="text-muted" style="text-align:center;padding:20px;">Nenhum conteúdo nos próximos 7 dias</div>';
+    next7.map(p=>{
+      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
+      return `<div class="pending-item" style="border-left-color:var(--blue);">
+        <div style="flex:1;">
+          <div class="pending-item-title">${p.titulo}</div>
+          <div class="pending-item-client">${getClientName(p.clienteId)} · <span style="color:var(--blue);font-size:10px;">👤 ${resp}</span></div>
+        </div>
+        <div class="pending-item-date">${formatDate(p.data)}</div>
+      </div>`;
+    }).join('') : '<div class="text-muted" style="text-align:center;padding:20px;">Nenhum conteúdo nos próximos 7 dias</div>';
 
   // Recent
   const recent = [...DB.posts].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
@@ -3803,8 +3773,7 @@ function exportCSV() {
 // ═══════════════════════════════════════
 const SECTIONS = [
   {id:'pDashboard', label:'Dashboard'},
-  {id:'pVisaoGeral', label:'Visão Geral'},
-  {id:'pRelatorios', label:'Relatórios'},
+
   {id:'pEquipe', label:'Equipe'},
   {id:'pHistorico', label:'Histórico'},
   {id:'pWorkflow', label:'Workflow'},
@@ -5497,15 +5466,22 @@ function renderProfessionalDashboard() {
 
   const renderProItems = (items, dotColor) => items.length ? items.map(d=>{
     const c = DB.clients.find(x=>x.id===d.clienteId);
+    const respSet = [...new Set((d.subtarefas||[]).filter(s=>s.colaborador).map(s=>s.colaborador))];
+    const respLabel = respSet.length ? respSet.join(', ') : (d.responsavel||'—');
     return `<div class="dash-pro-item" onclick="openWfPanel('${d.id}')">
       <div class="dash-pro-item-dot" style="background:${dotColor};"></div>
       <div style="flex:1;min-width:0;">
         <div class="dash-pro-item-title">${d.nome}</div>
         <div class="dash-pro-item-client">${c?`<span style="color:${c.cor||'var(--accent)'};">${c.nome}</span>`:'—'} · ${getAreas(d)}</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">👤 ${respLabel} · 📅 ${formatDate(d.dataEntrega)}</div>
       </div>
-      <div class="dash-pro-item-date">${formatDate(d.dataEntrega)}</div>
     </div>`;
   }).join('') : `<div class="dash-pro-empty">Nenhuma demanda aqui. 🎉</div>`;
+
+  // ── INBOX: demandas solicitadas pelos clientes aguardando gerar job
+  // TODO: quando a área do cliente for implementada, conectar as solicitações recebidas via portal
+  // do cliente à variável inboxDemands abaixo, filtrando por status='solicitado' na tabela workflow_demandas
+  const inboxDemands = wfDemands.filter(d => d.status === 'solicitado_cliente');
 
   const sections = [
     {icon:'🎯',title:'Meta de hoje',sub:'Essas aqui é a meta de hoje! Bora lá...',items:todayDemands,color:'var(--accent)',full:false},
@@ -5564,7 +5540,46 @@ function renderProfessionalDashboard() {
 
   const dashEl = document.getElementById('tabDashboard');
   if (!dashEl) return;
-  dashEl.innerHTML = `<div class="dash-pro-grid">${sections.map(s=>`
+
+  // ── Caixa de entrada HTML ──
+  const inboxHTML = `<div class="inbox-card">
+    <div class="inbox-title">📥 Solicitação de Novas Demandas <span style="font-size:11px;font-weight:400;color:var(--text-muted);">(enviadas pelos clientes via portal)</span></div>
+    ${inboxDemands.length ? inboxDemands.map(d=>{
+      const c = DB.clients.find(x=>x.id===d.clienteId);
+      return `<div class="inbox-item">
+        <div class="inbox-item-info">
+          <div class="inbox-item-nome">${d.nome}</div>
+          <div class="inbox-item-meta">
+            <span style="color:var(--accent);">${c?c.nome:'—'}</span>
+            ${d.dataEntrega ? ` · 📅 Prazo sugerido: ${formatDate(d.dataEntrega)}` : ''}
+          </div>
+        </div>
+        <button class="btn-gerar-job" onclick="gerarJobFromInbox('${d.id}')">✚ Gerar Job</button>
+      </div>`;
+    }).join('') : '<div class="inbox-empty">✅ Nenhuma solicitação pendente na caixa de entrada.<br><small style=\"color:var(--text-muted);font-size:10px;\">Quando a área do cliente for implementada, as solicitações aparecerão aqui automaticamente.</small></div>'}
+  </div>`;
+
+  // ── Big Numbers ──
+  const metricsHTML = `<div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">Demandas para hoje</div>
+      <div class="metric-value" style="color:var(--accent);">${todayDemands.length}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Na caixa de entrada</div>
+      <div class="metric-value" style="color:var(--purple);">${inboxDemands.length}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Urgentes</div>
+      <div class="metric-value" style="color:var(--orange);">${urgent.length}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Atrasadas</div>
+      <div class="metric-value" style="color:var(--red);">${late.length}</div>
+    </div>
+  </div>`;
+
+  dashEl.innerHTML = inboxHTML + metricsHTML + `<div class="dash-pro-grid">${sections.map(s=>`
     <div class="dash-pro-card" ${s.full?'style="grid-column:span 2;"':''}>
       <div class="dash-pro-card-header">
         <div class="dash-pro-card-icon">${s.icon}</div>
@@ -5585,7 +5600,292 @@ function renderProfessionalDashboard() {
       </div>
       ${workloadHtml}
     </div>
-  </div>`;
+  </div>
+
+  <!-- ANALYTICS SECTION: Por Colaborador / Por Cliente -->
+  <div class="dash-pro-card" style="grid-column:span 2;margin-top:14px;">
+    <div class="dash-pro-card-header">
+      <div class="dash-pro-card-icon">📊</div>
+      <div>
+        <div class="dash-pro-card-title">Análise de Performance</div>
+        <div class="dash-pro-card-sub">Métricas por colaborador ou por cliente com filtro de período</div>
+      </div>
+    </div>
+    <div id="analyticsPanel">${renderAnalyticsHTML()}</div>
+  </div>
+
+  `;
+}
+
+function renderAnalyticsHTML() {
+  return `
+  <div class="analytics-tabs">
+    <div class="analytics-tab active" id="atab-colab" onclick="switchAnalyticsTab('colab')">👤 Por Colaborador</div>
+    <div class="analytics-tab" id="atab-client" onclick="switchAnalyticsTab('client')">🏢 Por Cliente</div>
+  </div>
+
+  <!-- POR COLABORADOR -->
+  <div class="analytics-pane active" id="apane-colab">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+      <select class="filter-select" id="analyticsColabSel" onchange="renderAnalyticsColab()">
+        <option value="">Selecione um colaborador...</option>
+        ${DB.users.filter(u=>u.ativo!==false).map(u=>`<option value="${u.id}">${u.nome}</option>`).join('')}
+      </select>
+      <input type="date" class="filter-select" id="analyticsColabDe" title="De" onchange="renderAnalyticsColab()">
+      <input type="date" class="filter-select" id="analyticsColabAte" title="Até" onchange="renderAnalyticsColab()">
+      <button class="btn btn-ghost" style="font-size:12px;" onclick="exportAnalyticsCSV('colab')">⬇ Exportar</button>
+    </div>
+    <div id="analyticsColabContent"><div class="dash-pro-empty">Selecione um colaborador para ver as métricas.</div></div>
+  </div>
+
+  <!-- POR CLIENTE -->
+  <div class="analytics-pane" id="apane-client">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
+      <select class="filter-select" id="analyticsClientSel" onchange="renderAnalyticsClient()">
+        <option value="">Selecione um cliente...</option>
+        ${DB.clients.filter(c=>c.ativo!==false).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')}
+      </select>
+      <input type="date" class="filter-select" id="analyticsClientDe" title="De" onchange="renderAnalyticsClient()">
+      <input type="date" class="filter-select" id="analyticsClientAte" title="Até" onchange="renderAnalyticsClient()">
+      <button class="btn btn-ghost" style="font-size:12px;" onclick="exportAnalyticsCSV('client')">⬇ Exportar</button>
+    </div>
+    <div id="analyticsClientContent"><div class="dash-pro-empty">Selecione um cliente para ver as métricas.</div></div>
+  </div>
+  `;
+}
+
+function switchAnalyticsTab(tab) {
+  document.querySelectorAll('.analytics-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.analytics-pane').forEach(p => p.classList.remove('active'));
+  const tabEl = document.getElementById('atab-' + tab);
+  const paneEl = document.getElementById('apane-' + tab);
+  if (tabEl) tabEl.classList.add('active');
+  if (paneEl) paneEl.classList.add('active');
+}
+
+function renderAnalyticsColab() {
+  const uid = document.getElementById('analyticsColabSel')?.value;
+  const de = document.getElementById('analyticsColabDe')?.value;
+  const ate = document.getElementById('analyticsColabAte')?.value;
+  const el = document.getElementById('analyticsColabContent');
+  if (!el) return;
+  if (!uid) { el.innerHTML = '<div class="dash-pro-empty">Selecione um colaborador.</div>'; return; }
+
+  const u = DB.users.find(x => x.id === uid);
+  if (!u) return;
+
+  // Filter workflow demands with this collaborator's subtasks
+  const filteredDemands = wfDemands.filter(d => {
+    const sts = (d.subtarefas || []).filter(s => s.colaborador === u.nome);
+    if (!sts.length) return false;
+    if (de && d.dataEntrega && d.dataEntrega < de) return false;
+    if (ate && d.dataEntrega && d.dataEntrega > ate) return false;
+    return true;
+  });
+
+  // Subtasks for this collaborator
+  const mySubtasks = filteredDemands.flatMap(d =>
+    (d.subtarefas || [])
+      .filter(s => s.colaborador === u.nome)
+      .map(s => ({ ...s, demanda: d }))
+  );
+
+  const totalTelas = mySubtasks.reduce((acc, s) => acc + (s.artboards || 1), 0);
+  const totalTempoSecs = mySubtasks.reduce((acc, s) => acc + (s.tempo || 0), 0);
+  const tempoMedio = mySubtasks.length ? Math.round(totalTempoSecs / mySubtasks.length) : 0;
+  const digital = mySubtasks.filter(s => s.tipoDesign === 'digital').length;
+  const impressao = mySubtasks.filter(s => s.tipoDesign === 'impressao').length;
+
+  // Demands entregues fora do prazo
+  const atrasadas = filteredDemands.filter(d => {
+    if (!d.dataEntrega || d.status !== 'cliente') return false;
+    const [y,m,day] = d.dataEntrega.split('-').map(Number);
+    // Check if any of my subtasks were finished after deadline
+    return new Date(y,m-1,day) < new Date();
+  });
+
+  // All observations
+  const allObs = mySubtasks.flatMap(s =>
+    (s.observacoes || []).map(o => ({ ...o, subtarefaNome: s.nome, demandaNome: s.demanda.nome }))
+  );
+
+  el.innerHTML = `
+    <div class="analytics-big-numbers">
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--accent);">${totalTelas}</div>
+        <div class="analytics-bn-label">Telas feitas</div>
+      </div>
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--blue);">${fmtTime(tempoMedio)}</div>
+        <div class="analytics-bn-label">Tempo médio/tarefa</div>
+      </div>
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--red);">${atrasadas.length}</div>
+        <div class="analytics-bn-label">Entregas atrasadas</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+      <div class="card">
+        <div class="widget-title">📐 Demandas por tipo</div>
+        <div class="report-list-item"><span>Digital</span><span class="report-num">${digital}</span></div>
+        <div class="report-list-item"><span>Impressão</span><span class="report-num">${impressao}</span></div>
+        <div class="report-list-item"><span>Outros</span><span class="report-num">${mySubtasks.filter(s=>!s.tipoDesign).length}</span></div>
+      </div>
+      <div class="card">
+        <div class="widget-title">⏱ Tempo por demanda</div>
+        ${filteredDemands.slice(0,6).map(d=>{
+          const mySts = (d.subtarefas||[]).filter(s=>s.colaborador===u.nome);
+          const totalSecs = mySts.reduce((a,s)=>a+(s.tempo||0),0);
+          return `<div class="report-list-item"><span style="font-size:12px;">${d.nome.substring(0,28)}</span><span class="report-num" style="font-size:13px;">${fmtTime(totalSecs)}</span></div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="widget-title">💬 Observações do profissional</div>
+      ${allObs.length ? allObs.map(o=>`<div class="analytics-obs-item">
+        <div class="analytics-obs-task">📋 ${o.demandaNome} › ${o.subtarefaNome}</div>
+        <div>${o.texto}</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${o.dataHora}</div>
+      </div>`).join('') : '<div class="dash-pro-empty">Nenhuma observação registrada.</div>'}
+    </div>
+
+    ${atrasadas.length ? `<div class="card">
+      <div class="widget-title">🚨 Demandas entregues fora do prazo</div>
+      ${atrasadas.map(d=>`<div class="report-list-item"><span>${d.nome}</span><span style="color:var(--red);font-size:12px;">${formatDate(d.dataEntrega)}</span></div>`).join('')}
+    </div>` : ''}
+  `;
+}
+
+function renderAnalyticsClient() {
+  const cid = document.getElementById('analyticsClientSel')?.value;
+  const de = document.getElementById('analyticsClientDe')?.value;
+  const ate = document.getElementById('analyticsClientAte')?.value;
+  const el = document.getElementById('analyticsClientContent');
+  if (!el) return;
+  if (!cid) { el.innerHTML = '<div class="dash-pro-empty">Selecione um cliente.</div>'; return; }
+
+  const c = DB.clients.find(x => x.id === cid);
+  if (!c) return;
+
+  const filteredDemands = wfDemands.filter(d => {
+    if (String(d.clienteId) !== String(cid)) return false;
+    if (de && d.dataEntrega && d.dataEntrega < de) return false;
+    if (ate && d.dataEntrega && d.dataEntrega > ate) return false;
+    return true;
+  });
+
+  const allSubtasks = filteredDemands.flatMap(d => (d.subtarefas || []).map(s => ({ ...s, demanda: d })));
+  const totalTelas = allSubtasks.reduce((acc, s) => acc + (s.artboards || 1), 0);
+  const digital = allSubtasks.filter(s => s.tipoDesign === 'digital').length;
+  const impressao = allSubtasks.filter(s => s.tipoDesign === 'impressao').length;
+
+  const atrasadas = filteredDemands.filter(d => {
+    if (!d.dataEntrega) return false;
+    const [y,m,day] = d.dataEntrega.split('-').map(Number);
+    return new Date(y,m-1,day) < new Date() && d.status !== 'cliente';
+  });
+
+  // Client comments from posts
+  const clientPosts = DB.posts.filter(p => p.clienteId === cid);
+  const clientComments = clientPosts.flatMap(p =>
+    (p.comments || []).map(cm => ({ ...cm, postTitulo: p.titulo }))
+  );
+
+  // Inbox demands for this client
+  // TODO: quando a área do cliente for implementada, buscar solicitações pendentes do cliente aqui
+  const clientInbox = wfDemands.filter(d => String(d.clienteId) === String(cid) && d.status === 'solicitado_cliente');
+
+  el.innerHTML = `
+    <div class="analytics-big-numbers">
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--accent);">${totalTelas}</div>
+        <div class="analytics-bn-label">Telas produzidas</div>
+      </div>
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--red);">${atrasadas.length}</div>
+        <div class="analytics-bn-label">Demandas atrasadas</div>
+      </div>
+      <div class="analytics-bn">
+        <div class="analytics-bn-val" style="color:var(--purple);">${clientInbox.length}</div>
+        <div class="analytics-bn-label">Na caixa de entrada</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+      <div class="card">
+        <div class="widget-title">📐 Demandas por tipo</div>
+        <div class="report-list-item"><span>Digital</span><span class="report-num">${digital}</span></div>
+        <div class="report-list-item"><span>Impressão</span><span class="report-num">${impressao}</span></div>
+        <div class="report-list-item"><span>Outros</span><span class="report-num">${allSubtasks.filter(s=>!s.tipoDesign).length}</span></div>
+      </div>
+      <div class="card">
+        <div class="widget-title">📋 Demandas entregues fora do prazo</div>
+        ${atrasadas.length ? atrasadas.map(d=>`<div class="report-list-item"><span>${d.nome}</span><span style="color:var(--red);font-size:12px;">${formatDate(d.dataEntrega)}</span></div>`).join('') : '<div class="dash-pro-empty">Nenhuma. 🎉</div>'}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="widget-title">💬 Observações do cliente (nos cards de aprovação)</div>
+      ${clientComments.length ? clientComments.map(cm=>`<div class="analytics-obs-item">
+        <div class="analytics-obs-task">📋 Post: ${cm.postTitulo}</div>
+        <div>${cm.text}</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${cm.date}</div>
+      </div>`).join('') : '<div class="dash-pro-empty">Nenhum comentário registrado.</div>'}
+    </div>
+
+    <div class="card">
+      <div class="widget-title">📥 Solicitações na caixa de entrada</div>
+      ${clientInbox.length ? clientInbox.map(d=>`<div class="inbox-item">
+        <div class="inbox-item-info">
+          <div class="inbox-item-nome">${d.nome}</div>
+          <div class="inbox-item-meta">${d.dataEntrega ? '📅 Prazo sugerido: ' + formatDate(d.dataEntrega) : 'Sem prazo definido'}</div>
+        </div>
+        <button class="btn-gerar-job" onclick="gerarJobFromInbox('${d.id}')">✚ Gerar Job</button>
+      </div>`).join('') : '<div class="dash-pro-empty"><!-- TODO: Conectar com área do cliente quando implementada --><small style=\"color:var(--text-muted);\">Nenhuma solicitação pendente para este cliente.</small></div>'}
+    </div>
+  `;
+}
+
+function exportAnalyticsCSV(type) {
+  const rows = [['Tipo', 'Demanda', 'Cliente', 'Responsável', 'Entrega', 'Status', 'Telas', 'Tempo']];
+  const isColab = type === 'colab';
+  const uid = isColab ? document.getElementById('analyticsColabSel')?.value : null;
+  const cid = !isColab ? document.getElementById('analyticsClientSel')?.value : null;
+  const u = uid ? DB.users.find(x=>x.id===uid) : null;
+
+  wfDemands.forEach(d => {
+    if (isColab && uid) {
+      (d.subtarefas||[]).filter(s=>s.colaborador===u?.nome).forEach(s=>{
+        const c = DB.clients.find(x=>x.id===d.clienteId);
+        rows.push([s.tipoDesign||'—', d.nome, c?.nome||'—', s.colaborador, d.dataEntrega, d.status, s.artboards||1, fmtTime(s.tempo||0)]);
+      });
+    } else if (!isColab && cid && String(d.clienteId)===String(cid)) {
+      const c = DB.clients.find(x=>x.id===d.clienteId);
+      rows.push(['demanda', d.nome, c?.nome||'—', d.responsavel, d.dataEntrega, d.status, '—', '—']);
+    }
+  });
+
+  const csv = rows.map(r=>r.join(',')).join('
+');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'analytics-'+(isColab?u?.nome||'colab':'cliente')+'.csv';
+  a.click();
+}
+
+async function gerarJobFromInbox(demandId) {
+  const d = wfDemands.find(x => x.id === demandId);
+  if (!d) return;
+  if (!confirm(`Gerar Job para "${d.nome}"? A demanda será movida para "Em espera" no Workflow.`)) return;
+  d.status = 'espera';
+  await sbUpdate('workflow_demandas', demandId, { status: 'espera' });
+  await logHistory('Job gerado', getClientName(d.clienteId), `Job "${d.nome}" gerado da caixa de entrada`);
+  await loadAllData();
+  renderProfessionalDashboard();
+  switchToWorkflow();
+  showToast(`Job "${d.nome}" gerado com sucesso!`);
 }
 
 function populateWfFilterCliente() { populateWfFilters(); }
