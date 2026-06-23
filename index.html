@@ -5867,9 +5867,7 @@ function exportAnalyticsCSV(type) {
     }
   });
 
-  const csv = rows.map(r=>r.join(',')).join('
-');
-  const a = document.createElement('a');
+  const csv = rows.map(r=>r.join(',')).join('\n');
   a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download = 'analytics-'+(isColab?u?.nome||'colab':'cliente')+'.csv';
   a.click();
