@@ -1219,6 +1219,104 @@
   .analytics-obs-item { background: var(--bg-input); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; font-size: 12.5px; }
   .analytics-obs-task { font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .06em; }
 
+  /* ── APROVAÇÃO FILES & LINKS ── */
+  .approv-section {
+    margin-bottom: 12px; padding: 12px;
+    background: var(--bg-card2); border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+  }
+  .approv-section-title {
+    font-size: 11px; color: var(--accent); font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .approv-carousel-wrap {
+    position: relative; overflow: hidden; border-radius: var(--radius-sm);
+    background: #000; margin-bottom: 10px;
+    min-height: 140px; max-height: 300px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .approv-carousel-track {
+    display: flex; transition: transform .35s cubic-bezier(.4,0,.2,1);
+    height: 100%; min-height: 140px;
+  }
+  .approv-carousel-slide {
+    flex: 0 0 100%; min-height: 140px; max-height: 300px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .approv-carousel-slide img {
+    max-width: 100%; max-height: 300px; object-fit: contain; border-radius: 4px;
+  }
+  .approv-carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,.6); border: none; color: white;
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    z-index: 5; transition: background .15s;
+  }
+  .approv-carousel-btn:hover { background: rgba(0,0,0,.9); }
+  .approv-carousel-btn.prev { left: 8px; }
+  .approv-carousel-btn.next { right: 8px; }
+  .approv-carousel-count {
+    position: absolute; bottom: 6px; right: 8px;
+    background: rgba(0,0,0,.6); color: white; font-size: 10px;
+    padding: 1px 7px; border-radius: 20px;
+  }
+  .approv-carousel-dots {
+    display: flex; gap: 4px; justify-content: center; margin-bottom: 8px;
+  }
+  .approv-carousel-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border-light); cursor: pointer; transition: background .2s;
+  }
+  .approv-carousel-dot.active { background: var(--accent); }
+  .approv-thumbs-row {
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px;
+  }
+  .approv-thumb {
+    position: relative; width: 52px; height: 52px;
+    border-radius: 6px; overflow: hidden; border: 2px solid var(--border);
+    cursor: pointer; transition: border-color .15s; flex-shrink: 0;
+  }
+  .approv-thumb:hover { border-color: var(--accent); }
+  .approv-thumb.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(61,220,132,.3); }
+  .approv-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .approv-thumb-remove {
+    position: absolute; top: 1px; right: 1px;
+    background: rgba(0,0,0,.75); border: none; color: white;
+    width: 16px; height: 16px; border-radius: 50%; cursor: pointer;
+    font-size: 9px; display: flex; align-items: center; justify-content: center;
+  }
+  .approv-upload-btn {
+    width: 52px; height: 52px; border-radius: 6px;
+    border: 1.5px dashed var(--border-light); background: var(--bg-input);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-muted); font-size: 20px;
+    transition: border-color .15s, background .15s; flex-shrink: 0;
+  }
+  .approv-upload-btn:hover { border-color: var(--accent); background: #001a0e; color: var(--accent); }
+  .approv-link-list { margin-bottom: 8px; }
+  .approv-link-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px; background: var(--bg-input);
+    border-radius: var(--radius-sm); margin-bottom: 4px;
+    border: 1px solid var(--border);
+  }
+  .approv-link-item a {
+    flex: 1; color: var(--accent); font-size: 12px;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
+    text-decoration: none;
+  }
+  .approv-link-item a:hover { text-decoration: underline; }
+  .approv-link-remove {
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 3px;
+    transition: color .15s; flex-shrink: 0;
+  }
+  .approv-link-remove:hover { color: var(--red); }
+  .approv-link-input-row { display: flex; gap: 6px; align-items: center; }
+  .approv-empty { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 4px 0; }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg-base); }
@@ -4949,6 +5047,61 @@ function renderSubtasks(d) {
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addObs('${s.id}')}">
           <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addObs('${s.id}')">↵</button>
         </div>
+
+      <!-- APROVACAO FILES & LINKS -->
+      <div class="approv-section">
+        <div class="approv-section-title">📎 Arquivos & Links para Aprovação</div>
+        <!-- Images carousel (visible if there are files) -->
+        ${(s.aprovacaoFiles&&s.aprovacaoFiles.length)?`
+        <div class="approv-carousel-wrap" id="ac-wrap-${s.id}">
+          <div class="approv-carousel-track" id="ac-track-${s.id}">
+            ${s.aprovacaoFiles.map((f,fi)=>`<div class="approv-carousel-slide"><img src="${f.url}" onclick="openLightbox('${f.url}')" style="cursor:zoom-in;" title="Clique para ampliar"></div>`).join('')}
+          </div>
+          ${s.aprovacaoFiles.length>1?`
+            <button class="approv-carousel-btn prev" onclick="aprovPrev('${s.id}')">‹</button>
+            <button class="approv-carousel-btn next" onclick="aprovNext('${s.id}')">›</button>
+            <div class="approv-carousel-count" id="ac-count-${s.id}">1 / ${s.aprovacaoFiles.length}</div>
+          `:''}
+        </div>
+        <div class="approv-carousel-dots" id="ac-dots-${s.id}">
+          ${s.aprovacaoFiles.map((_,fi)=>`<div class="approv-carousel-dot${fi===0?' active':''}" onclick="aprovGoSlide('${s.id}',${fi})"></div>`).join('')}
+        </div>
+        `:''}
+        <!-- Thumbnail strip + add button -->
+        <div class="approv-thumbs-row" id="ac-thumbs-${s.id}">
+          ${(s.aprovacaoFiles||[]).map((f,fi)=>`
+            <div class="approv-thumb${fi===0?' active':''}" id="ac-th-${s.id}-${fi}" onclick="aprovGoSlide('${s.id}',${fi})" title="${f.nome||''}">
+              <img src="${f.url}">
+              <button class="approv-thumb-remove" onclick="event.stopPropagation();removeAprovFile('${s.id}',${fi})">✕</button>
+            </div>`).join('')}
+          ${(s.aprovacaoFiles||[]).length<10?`
+            <label class="approv-upload-btn" title="Adicionar imagem (máx 10, até 10 MB cada)">
+              +<input type="file" accept="image/*" multiple style="display:none;"
+                onchange="addAprovFiles('${s.id}',this)" title="Selecione até 10 imagens (max 10MB cada)">
+            </label>
+          `:`<span style="font-size:10px;color:var(--text-muted);align-self:center;">Máx. 10 imagens</span>`}
+        </div>
+        <!-- Links -->
+        <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">🔗 Links externos</div>
+        <div class="approv-link-list" id="ac-links-${s.id}">
+          ${(s.aprovacaoLinks||[]).length?
+            (s.aprovacaoLinks||[]).map((lk,li)=>`
+              <div class="approv-link-item">
+                <span style="font-size:14px;flex-shrink:0;">🔗</span>
+                <a href="${lk.url}" target="_blank" rel="noopener" title="${lk.url}">${lk.label||lk.url}</a>
+                <button class="approv-link-remove" onclick="removeAprovLink('${s.id}',${li})" title="Remover link">✕</button>
+              </div>`).join('')
+          :`<div class="approv-empty">Nenhum link adicionado ainda.</div>`}
+        </div>
+        <div class="approv-link-input-row">
+          <input class="form-input" id="ac-link-url-${s.id}" placeholder="https://..." style="flex:1;font-size:12px;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addAprovLink('${s.id}')}">
+          <input class="form-input" id="ac-link-label-${s.id}" placeholder="Descrição (opcional)" style="width:140px;font-size:12px;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();addAprovLink('${s.id}')}">
+          <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addAprovLink('${s.id}')">+ Link</button>
+        </div>
+      </div>
+
       ${isTotal&&!s.done?`
       <!-- SAVE BUTTON -->
       <div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">
@@ -5106,9 +5259,27 @@ async function saveSubtask(sid) {
   const s = d.subtarefas.find(x=>x.id===sid);
   if(s && briefingEl) s.briefing = briefingEl.innerHTML;
   clearTimeout(window._briefingDebounce);
+
+  // Upload any base64 approval images to Cloudinary
+  if (s && s.aprovacaoFiles && s.aprovacaoFiles.some(f => !f.uploaded)) {
+    showLoading('Enviando imagens para aprovação...');
+    for (let i = 0; i < s.aprovacaoFiles.length; i++) {
+      const f = s.aprovacaoFiles[i];
+      if (!f.uploaded && f.url && f.url.startsWith('data:')) {
+        try {
+          const blob = await fetch(f.url).then(r => r.blob());
+          const cloudUrl = await uploadToCloudinary(new File([blob], f.nome || 'img.jpg', { type: blob.type }));
+          if (cloudUrl) { s.aprovacaoFiles[i].url = cloudUrl; s.aprovacaoFiles[i].uploaded = true; }
+        } catch(e) { console.warn('Cloudinary upload failed for', f.nome, e); }
+      }
+    }
+    hideLoading();
+  }
+
   await saveSubtarefas(d);
   showToast('Subtarefa salva com sucesso!');
   renderWorkflow();
+  renderSubtasks(d);
 }
 
 function updateStCaptacao(sid, field, val) {
@@ -5846,6 +6017,121 @@ function renderAnalyticsClient() {
       </div>`).join('') : '<div class="dash-pro-empty"><!-- TODO: Conectar com área do cliente quando implementada --><small style=\"color:var(--text-muted);\">Nenhuma solicitação pendente para este cliente.</small></div>'}
     </div>
   `;
+}
+
+// ═══════════════════════════════════════
+// APPROVAL FILES & LINKS (subtask card)
+// ═══════════════════════════════════════
+
+// State: carousel current index per subtask
+const aprovCarouselState = {};
+
+function aprovGoSlide(sid, idx) {
+  const track = document.getElementById('ac-track-' + sid);
+  if (!track) return;
+  const slides = track.querySelectorAll('.approv-carousel-slide');
+  const count = slides.length;
+  if (!count) return;
+  aprovCarouselState[sid] = Math.max(0, Math.min(idx, count - 1));
+  const cur = aprovCarouselState[sid];
+  track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+  // Update dots
+  const dotsWrap = document.getElementById('ac-dots-' + sid);
+  if (dotsWrap) dotsWrap.querySelectorAll('.approv-carousel-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  // Update count
+  const countEl = document.getElementById('ac-count-' + sid);
+  if (countEl) countEl.textContent = (cur + 1) + ' / ' + count;
+  // Update thumb highlight
+  const thumbsWrap = document.getElementById('ac-thumbs-' + sid);
+  if (thumbsWrap) thumbsWrap.querySelectorAll('.approv-thumb').forEach((t, i) => t.classList.toggle('active', i === cur));
+}
+
+function aprovPrev(sid) { aprovGoSlide(sid, (aprovCarouselState[sid] || 0) - 1); }
+function aprovNext(sid) { aprovGoSlide(sid, (aprovCarouselState[sid] || 0) + 1); }
+
+async function addAprovFiles(sid, input) {
+  const d = wfDemands.find(x => x.id === currentWfDemandId);
+  if (!d) return;
+  const s = d.subtarefas.find(x => x.id === sid);
+  if (!s) return;
+  if (!s.aprovacaoFiles) s.aprovacaoFiles = [];
+
+  const files = Array.from(input.files);
+  const maxFiles = 10;
+  const maxSizeMB = 10;
+  let rejected = [];
+
+  for (const file of files) {
+    if (s.aprovacaoFiles.length >= maxFiles) {
+      rejected.push(file.name + ' (limite de 10 imagens atingido)');
+      continue;
+    }
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      rejected.push(file.name + ' (maior que 10 MB)');
+      continue;
+    }
+    // Convert to base64 for local preview; upload to Cloudinary on save
+    const b64 = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    s.aprovacaoFiles.push({ url: b64, nome: file.name, uploaded: false });
+  }
+
+  input.value = '';
+  if (rejected.length) showToast('Rejeitados: ' + rejected.join(', '), true);
+
+  // Re-render subtasks to show the new images
+  renderSubtasks(d);
+  aprovCarouselState[sid] = 0;
+}
+
+async function removeAprovFile(sid, fileIdx) {
+  const d = wfDemands.find(x => x.id === currentWfDemandId);
+  if (!d) return;
+  const s = d.subtarefas.find(x => x.id === sid);
+  if (!s || !s.aprovacaoFiles) return;
+  s.aprovacaoFiles.splice(fileIdx, 1);
+  aprovCarouselState[sid] = 0;
+  await saveSubtarefas(d);
+  renderSubtasks(d);
+}
+
+async function addAprovLink(sid) {
+  const d = wfDemands.find(x => x.id === currentWfDemandId);
+  if (!d) return;
+  const s = d.subtarefas.find(x => x.id === sid);
+  if (!s) return;
+
+  const urlInput = document.getElementById('ac-link-url-' + sid);
+  const labelInput = document.getElementById('ac-link-label-' + sid);
+  if (!urlInput) return;
+
+  let url = urlInput.value.trim();
+  if (!url) return;
+  // Auto-add https if missing
+  if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+
+  const label = labelInput ? labelInput.value.trim() : '';
+  if (!s.aprovacaoLinks) s.aprovacaoLinks = [];
+  s.aprovacaoLinks.push({ url, label });
+
+  urlInput.value = '';
+  if (labelInput) labelInput.value = '';
+
+  await saveSubtarefas(d);
+  renderSubtasks(d);
+}
+
+async function removeAprovLink(sid, linkIdx) {
+  const d = wfDemands.find(x => x.id === currentWfDemandId);
+  if (!d) return;
+  const s = d.subtarefas.find(x => x.id === sid);
+  if (!s || !s.aprovacaoLinks) return;
+  s.aprovacaoLinks.splice(linkIdx, 1);
+  await saveSubtarefas(d);
+  renderSubtasks(d);
 }
 
 function exportAnalyticsCSV(type) {
