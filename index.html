@@ -1317,6 +1317,185 @@
   .approv-link-input-row { display: flex; gap: 6px; align-items: center; }
   .approv-empty { font-size: 11px; color: var(--text-muted); font-style: italic; padding: 4px 0; }
 
+
+  /* ── ÁREA DO CLIENTE (PORTAL) ── */
+  .portal-page { display:none; position:fixed; inset:0; z-index:1500; background:var(--bg-base); overflow-y:auto; }
+  .portal-page.show { display:block; }
+
+  /* Portal header */
+  .portal-header {
+    background:var(--bg-card); border-bottom:1px solid var(--border);
+    padding:14px 24px; display:flex; align-items:center; gap:16px;
+    position:sticky; top:0; z-index:100;
+  }
+  .portal-logo { flex:1; }
+  .portal-logo img { height:40px; object-fit:contain; }
+  .portal-user-select {
+    position:relative;
+  }
+  .portal-user-btn {
+    display:flex; align-items:center; gap:8px;
+    background:var(--bg-input); border:1px solid var(--border);
+    border-radius:var(--radius-sm); padding:8px 14px; cursor:pointer;
+    font-size:13px; font-weight:600; color:var(--text-primary); font-family:inherit;
+    transition:border-color .15s;
+  }
+  .portal-user-btn:hover { border-color:var(--accent); }
+  .portal-user-dropdown {
+    position:absolute; right:0; top:calc(100% + 4px);
+    background:var(--bg-card2); border:1px solid var(--border);
+    border-radius:var(--radius-sm); min-width:200px; z-index:200;
+    box-shadow:0 8px 24px rgba(0,0,0,.4); padding:4px;
+    display:none;
+  }
+  .portal-user-dropdown.open { display:block; }
+  .portal-user-option {
+    padding:9px 14px; cursor:pointer; border-radius:4px;
+    font-size:13px; color:var(--text-secondary); transition:background .15s;
+  }
+  .portal-user-option:hover { background:var(--bg-hover); color:var(--text-primary); }
+  .portal-user-option.selected { color:var(--accent); font-weight:700; }
+
+  /* Portal content layout */
+  .portal-body { max-width:1200px; margin:0 auto; padding:24px; }
+
+  /* Portal notices */
+  .portal-notice {
+    background:rgba(61,220,132,.07); border:1px solid rgba(61,220,132,.2);
+    border-radius:var(--radius); padding:14px 18px; margin-bottom:20px;
+    display:flex; align-items:flex-start; gap:10px; font-size:13px;
+  }
+
+  /* New demand button */
+  .btn-nova-demanda {
+    background:var(--accent); color:#000; border:none;
+    border-radius:var(--radius-sm); padding:10px 22px;
+    font-size:14px; font-weight:800; cursor:pointer;
+    font-family:inherit; display:flex; align-items:center; gap:8px;
+    transition:background .15s;
+  }
+  .btn-nova-demanda:hover { background:var(--accent-dim); }
+
+  /* Notification area */
+  .portal-notif-area {
+    background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.2);
+    border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:16px;
+    display:none;
+  }
+  .portal-notif-area.has-items { display:block; }
+  .portal-notif-title { font-size:12px; font-weight:700; color:var(--red); margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
+  .portal-notif-item { font-size:12px; color:var(--text-secondary); padding:4px 0; border-bottom:1px solid rgba(239,68,68,.15); }
+  .portal-notif-item:last-child { border-bottom:none; }
+
+  /* Client Kanban */
+  .client-kanban { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .client-lane { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); }
+  .client-lane-header {
+    padding:12px 16px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .client-lane-title { font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; }
+  .client-lane-count { background:var(--bg-input); border-radius:20px; padding:1px 8px; font-size:11px; color:var(--text-muted); font-weight:600; }
+  .client-lane-cards { padding:10px; display:flex; flex-direction:column; gap:8px; min-height:100px; }
+
+  /* Client demand card */
+  .client-card {
+    background:var(--bg-card2); border:1px solid var(--border);
+    border-radius:var(--radius); padding:14px; cursor:pointer;
+    transition:border-color .15s, transform .1s, box-shadow .15s;
+    position:relative; overflow:hidden;
+  }
+  .client-card:hover { border-color:var(--accent); transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,.3); }
+  .client-card.purple { border-color:var(--purple) !important; background:rgba(168,85,247,.08) !important; }
+  .client-card.red-cancel { border-color:var(--red) !important; background:rgba(239,68,68,.08) !important; }
+  .client-card-title { font-size:13px; font-weight:700; margin-bottom:8px; line-height:1.3; }
+  .client-card-meta { font-size:11px; color:var(--text-muted); margin-bottom:8px; }
+  .client-card-chips { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
+  .client-card-chip { font-size:10px; padding:2px 7px; border-radius:20px; background:var(--bg-input); border:1px solid var(--border); color:var(--text-muted); }
+  .client-card-chip.urgent { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.3); color:var(--red); font-weight:700; }
+  .client-card-chip.new-attach { background:rgba(168,85,247,.15); border-color:rgba(168,85,247,.3); color:var(--purple); font-weight:700; }
+  .client-card-progress { margin-top:8px; }
+  .client-card-progress-track { height:4px; background:var(--bg-input); border-radius:2px; overflow:hidden; }
+  .client-card-progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width .4s; }
+  .client-card-progress-label { font-size:10px; color:var(--text-muted); margin-top:3px; }
+  .client-card-delivery { font-size:10px; color:var(--accent); font-weight:600; margin-top:6px; }
+
+  /* Demand detail panel for client */
+  .client-detail-panel {
+    position:fixed; right:0; top:0; bottom:0; width:560px;
+    background:var(--bg-card); border-left:1px solid var(--border);
+    z-index:901; display:flex; flex-direction:column;
+    transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
+    overflow-y:auto;
+  }
+  .client-detail-panel.open { transform:translateX(0); }
+  .client-detail-header {
+    padding:18px 22px 14px; border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:var(--bg-card); z-index:2;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .client-detail-body { padding:18px 22px; flex:1; }
+  .client-detail-footer {
+    padding:12px 22px; border-top:1px solid var(--border);
+    position:sticky; bottom:0; background:var(--bg-card); display:flex; gap:8px;
+  }
+
+  /* Progress bar with labels */
+  .delivery-progress-wrap { margin:16px 0; }
+  .delivery-progress-track { height:10px; background:var(--bg-input); border-radius:5px; overflow:hidden; position:relative; }
+  .delivery-progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#2bb86d); border-radius:5px; transition:width .5s; }
+  .delivery-progress-labels { display:flex; justify-content:space-between; margin-top:5px; font-size:10px; color:var(--text-muted); }
+  .delivery-progress-msg { text-align:center; font-size:12px; font-weight:700; color:var(--accent); margin-top:6px; }
+
+  /* Approval buttons */
+  .approval-btns { display:flex; gap:10px; margin:16px 0; }
+  .approval-btns .btn { flex:1; justify-content:center; font-size:14px; padding:12px; }
+  .btn-aprovar { background:rgba(61,220,132,.2); color:var(--green); border:1px solid rgba(61,220,132,.4); font-weight:800; }
+  .btn-aprovar:hover { background:rgba(61,220,132,.35); }
+  .btn-reprovar { background:rgba(239,68,68,.2); color:var(--red); border:1px solid rgba(239,68,68,.4); font-weight:800; }
+  .btn-reprovar:hover { background:rgba(239,68,68,.35); }
+
+  /* Chat / comments */
+  .chat-wrap { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; max-height:220px; overflow-y:auto; }
+  .chat-bubble { background:var(--bg-input); border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px; }
+  .chat-bubble.client { background:rgba(61,220,132,.08); border:1px solid rgba(61,220,132,.15); }
+  .chat-meta { font-size:10px; color:var(--text-muted); margin-top:3px; }
+
+  /* New demand modal */
+  .modal-nova-demanda { width:700px; max-width:98vw; }
+
+  /* Approval popup */
+  .approval-popup {
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,.7); z-index:2000;
+    display:flex; align-items:center; justify-content:center;
+    display:none;
+  }
+  .approval-popup.show { display:flex; }
+  .approval-popup-box {
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:28px 32px; max-width:480px; width:95%;
+    animation:popIn .3s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+
+  /* File attachments in client panel */
+  .client-attach-grid { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .client-attach-thumb {
+    width:72px; height:72px; border-radius:8px; overflow:hidden;
+    border:1px solid var(--border); cursor:zoom-in;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg-input); font-size:28px; flex-shrink:0;
+  }
+  .client-attach-thumb img { width:100%; height:100%; object-fit:cover; }
+  .client-attach-link {
+    display:flex; align-items:center; gap:6px; padding:6px 10px;
+    background:var(--bg-input); border-radius:var(--radius-sm); border:1px solid var(--border);
+    font-size:12px; text-decoration:none; color:var(--accent);
+    transition:border-color .15s;
+  }
+  .client-attach-link:hover { border-color:var(--accent); }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg-base); }
@@ -1353,28 +1532,142 @@
   </div>
 </div>
 
-<!-- ══════════════════ PORTAL CLIENTE ══════════════════ -->
+<!-- ══════════════════ PORTAL CLIENTE (ÁREA DO CLIENTE) ══════════════════ -->
 <div class="portal-page" id="portalPage">
+
+  <!-- Header -->
   <div class="portal-header">
-    <div id="portalLogoDisplay" style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:var(--accent);">AGÊNCIA</div>
-    <div style="flex:1; margin-left:16px;">
-      <div id="portalClientName" style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--text-primary);"></div>
-      <div style="font-size:11px;color:var(--text-muted);">Portal de Aprovação de Conteúdo</div>
+    <div class="portal-logo">
+      <div id="portalLogoDisplay" style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:var(--accent);">AGÊNCIA</div>
     </div>
-    <button class="btn btn-ghost" id="portalBackBtn" onclick="hidePortal()" style="font-size:12px;">← Voltar ao login</button>
+    <div style="flex:1;padding-left:12px;">
+      <div id="portalClientNameDisplay" style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--text-primary);"></div>
+      <div style="font-size:11px;color:var(--text-muted);">Área do Cliente</div>
+    </div>
+    <!-- User selector dropdown (marketing contacts) -->
+    <div class="portal-user-select" id="portalUserSelectWrap" style="display:none;">
+      <button class="portal-user-btn" onclick="togglePortalUserDropdown(event)">
+        <span id="portalCurrentUserLabel">Identificar-se</span>
+        <span>▾</span>
+      </button>
+      <div class="portal-user-dropdown" id="portalUserDropdown"></div>
+    </div>
+    <button class="btn btn-ghost" id="portalBackBtn" onclick="hidePortal()" style="font-size:12px;margin-left:12px;">← Voltar ao login</button>
   </div>
-  <div class="portal-content">
-    <div class="aviso-banner">
-      <div class="aviso-title">⚠️ Aviso para Aprovação de Posts — Leia Antes de Finalizar</div>
-      <div class="aviso-item">✅ <span><strong>Aprove todos os posts individualmente</strong> após revisar texto, arte e conteúdo.</span></div>
-      <div class="aviso-item">✖️ <span><strong>Para reprovar,</strong> escreva o motivo no campo de comentários do post <u>antes</u> de clicar em Reprovar — o comentário será registrado automaticamente.</span></div>
-      <div class="aviso-item">✉️ <span><strong>Comentários adicionais</strong> podem ser enviados clicando na seta de envio — sem isso, o comentário não aparece para a equipe.</span></div>
-      <div class="aviso-item">📅 <span><strong>Posts sem status atualizado</strong> não entram no calendário de publicação.</span></div>
+
+  <!-- Body -->
+  <div class="portal-body">
+
+    <!-- Notification area (demands without action >2 days) -->
+    <div class="portal-notif-area" id="portalNotifArea">
+      <div class="portal-notif-title">⚠️ Demandas sem movimentação há mais de 2 dias</div>
+      <div id="portalNotifList"></div>
     </div>
-    <div class="section-header">
-      <div class="section-title" id="portalClientSub">Conteúdos para aprovação</div>
+
+    <!-- Header actions -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;" id="portalClientName"></div>
+        <div style="font-size:12px;color:var(--text-muted);">Acompanhe suas demandas em tempo real</div>
+      </div>
+      <button class="btn-nova-demanda" onclick="openNovaDemandaModal()">
+        <span style="font-size:18px;font-weight:900;">+</span> Solicitar Demanda
+      </button>
     </div>
-    <div class="posts-grid" id="portalPostsGrid"></div>
+
+    <!-- Client Kanban -->
+    <div class="client-kanban" id="clientKanban">
+      <!-- rendered by JS -->
+    </div>
+
+  </div>
+
+  <!-- Approval popup (shown when card enters Em Aprovação) -->
+  <div class="approval-popup" id="approvalPopup">
+    <div class="approval-popup-box">
+      <div style="font-size:28px;text-align:center;margin-bottom:12px;">🔔</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;text-align:center;margin-bottom:8px;color:var(--accent);">Novos materiais para aprovação!</div>
+      <div style="font-size:13px;color:var(--text-secondary);text-align:center;margin-bottom:20px;" id="approvalPopupMsg">Você tem demandas aguardando sua aprovação.</div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="closeApprovalPopup()">Ver demandas</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ CLIENT DEMAND DETAIL PANEL ══════════════════ -->
+<div class="detail-panel-overlay" id="clientPanelOverlay" onclick="closeClientPanel()"></div>
+<div class="client-detail-panel" id="clientDetailPanel">
+  <div class="client-detail-header">
+    <div style="flex:1;">
+      <div style="font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;" id="cdpTitle">—</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:3px;" id="cdpMeta">—</div>
+    </div>
+    <div id="cdpStatusBadge"></div>
+    <button class="detail-panel-close" onclick="closeClientPanel()">✕</button>
+  </div>
+  <div class="client-detail-body">
+    <div id="cdpContent"></div>
+  </div>
+  <div class="client-detail-footer" id="cdpFooter"></div>
+</div>
+
+<!-- ══════════════════ NOVA DEMANDA MODAL ══════════════════ -->
+<div class="modal-overlay" id="novaDemandaModal">
+  <div class="modal modal-nova-demanda">
+    <div class="modal-title">
+      ✚ Solicitar Nova Demanda
+      <span class="modal-close" onclick="closeModal('novaDemandaModal')">✕</span>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div class="form-group">
+        <label class="form-label">Nome do job *</label>
+        <input class="form-input" id="ndNome" placeholder="Ex: Campanha Julho 2026">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de job *</label>
+        <select class="form-input" id="ndTipo">
+          <option value="digital">Digital</option>
+          <option value="impresso">Impresso</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px;">
+      <div class="form-group">
+        <label class="form-label">Data de entrega sugerida *</label>
+        <input class="form-input" type="date" id="ndDataEntrega">
+      </div>
+      <div class="form-group">
+        <div id="ndUrgencyWarning" style="display:none;margin-top:20px;padding:8px 12px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius-sm);font-size:12px;color:var(--red);">
+          ⚠️ Esta demanda possui menos de 3 dias para execução e está sujeita à disponibilidade operacional.
+        </div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">Comentários / Briefing</label>
+      <textarea class="form-input" id="ndComentario" rows="3" placeholder="Descreva o que precisa ser feito..."></textarea>
+    </div>
+    <!-- File attachments -->
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">Anexos (imagens até 10 MB — vídeos/PDFs use link abaixo)</label>
+      <input type="file" id="ndFiles" accept="image/png,image/jpg,image/jpeg" multiple style="color:var(--text-secondary);font-size:13px;">
+      <div id="ndFileWarning" style="display:none;margin-top:6px;font-size:12px;color:var(--red);">
+        ⚠️ Arquivo maior que 10 MB. Faça o upload no <a href="https://wetransfer.com" target="_blank" style="color:var(--accent);">WeTransfer</a> e cole o link abaixo.
+      </div>
+      <div id="ndFilePreviews" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;"></div>
+    </div>
+    <!-- Links -->
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Links de referência</label>
+      <div id="ndLinksList" style="margin-bottom:6px;"></div>
+      <div style="display:flex;gap:6px;">
+        <input class="form-input" id="ndLinkInput" placeholder="https://..." style="flex:1;">
+        <button class="btn btn-ghost" style="font-size:12px;" onclick="addNdLink()">+ Link</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeModal('novaDemandaModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarNovaDemanda()">Enviar Solicitação</button>
+    </div>
   </div>
 </div>
 
@@ -1870,6 +2163,7 @@
       <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:6px;">Observações</div>
       <div style="font-size:13px;color:var(--text-secondary);" id="wfDpObs">—</div>
     </div>
+    <div id="wfClientComments" style="margin-top:12px;display:none;"></div>
   </div>
   <div class="wf-detail-footer">
     <button class="btn btn-ghost" style="font-size:12px;" onclick="openEditDemand()">✏️ Editar</button>
@@ -2428,7 +2722,13 @@ function mapDemand(r) {
   const d = { id:r.id, nome:r.nome, clienteId:r.cliente_id, responsavel:r.responsavel||'',
     dataEntrada:r.data_entrada||'', dataEntrega:r.data_entrega||'',
     status:r.status||'espera', obs:r.obs||'', version:r.version||1,
-    isAlteracao:r.is_alteracao||false, subtarefas:r.subtarefas||[]
+    isAlteracao:r.is_alteracao||false, subtarefas:r.subtarefas||[],
+    tipo:r.tipo||'', isUrgent:r.is_urgent||false,
+    clientAttachments:r.client_attachments||[],
+    clientLinks:r.client_links||[],
+    clientComments:r.client_comments||[],
+    cancelRequest:r.cancel_request||false,
+    novosAnexos:r.novos_anexos||false,
   };
   return d;
 }
@@ -3666,7 +3966,7 @@ function renderDashboard() {
 
   // Pending
   const pendPosts = DB.posts.filter(p=>p.status==='pendente').slice(0,5);
-const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) _dpEl.innerHTML = pendPosts.length ?
+const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) dpEl.innerHTML = pendPosts.length ?
     pendPosts.map(p=>{
       const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
       return `<div class="pending-item">
@@ -3686,7 +3986,7 @@ const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) _dpEl.inne
     const pd=new Date(y,m-1,d);
     return pd>=now&&pd<=in7&&p.status!=='reprovado'&&p.status!=='finalizado';
   });
-const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) _dn7El.innerHTML = next7.length ?
+const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) dn7El.innerHTML = next7.length ?
     next7.map(p=>{
       const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
       return `<div class="pending-item" style="border-left-color:var(--blue);">
@@ -3700,7 +4000,7 @@ const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) _dn7El.innerHT
 
   // Recent
   const recent = [...DB.posts].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
-const _drpEl =   document.getElementById('dashRecentPosts'); if(_drpEl) _drpEl.innerHTML = recent.map(p=>`
+const _drpEl =   document.getElementById('dashRecentPosts'); if(_drpEl) drpEl.innerHTML = recent.map(p=>`
     <div class="recent-item">
       <div class="recent-thumb">${getThumb(p)?`<img src="${getThumb(p)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`:'🖼️'}</div>
       <div class="recent-info">
@@ -4175,183 +4475,571 @@ let portalClientId = null;
 let portalMonthFilter = { year: new Date().getFullYear(), month: new Date().getMonth()+1 };
 
 function renderPortalPosts(clientId, year, month) {
+  // Legacy: redirect to new portal renderer
   portalClientId = clientId || portalClientId || null;
-  if (!portalClientId) return;
   if (year && month) portalMonthFilter = { year, month };
+  renderClientPortal();
+}
 
+// ═══════════════════════════════════════
+// ÁREA DO CLIENTE — PORTAL MODULE
+// ═══════════════════════════════════════
+
+let portalCurrentUser = null; // name chosen by client contact
+let ndLinks = []; // links for new demand
+let ndFiles = []; // files for new demand (base64)
+let currentClientDemandId = null; // currently open demand in panel
+let portalNewAttachSeen = {}; // track which demands client has clicked (purple cleared)
+
+// Status mapping: internal workflow → client view
+const WF_TO_CLIENT_STATUS = {
+  espera:    'enviado',
+  producao:  'emproducao',
+  revisao:   'emproducao',
+  aprovacao: 'emproducao',
+  cliente:   'emaprovacao',
+  reprovado: 'emaprovacao',
+  aprovado:  'finalizado',
+  finalizado:'finalizado',
+  solicitado_cliente: 'enviado',
+};
+
+const CLIENT_STATUS_LABELS = {
+  enviado:     'Enviado',
+  emproducao:  'Em Produção',
+  emaprovacao: 'Em Aprovação',
+  finalizado:  'Finalizado',
+};
+
+const CLIENT_STATUS_COLORS = {
+  enviado:     '#4a5a72',
+  emproducao:  'var(--blue)',
+  emaprovacao: 'var(--accent)',
+  finalizado:  '#818cf8',
+};
+
+const CLIENT_KANBAN_COLS = [
+  { id:'enviado',     label:'Enviado',        color:'#4a5a72' },
+  { id:'emproducao',  label:'Em Produção',     color:'var(--blue)' },
+  { id:'emaprovacao', label:'Em Aprovação',    color:'var(--accent)' },
+  { id:'finalizado',  label:'Finalizado',      color:'#818cf8' },
+];
+
+function getClientDemandStatus(d) {
+  return WF_TO_CLIENT_STATUS[d.status] || 'enviado';
+}
+
+function renderClientPortal() {
+  if (!portalClientId) return;
   const c = DB.clients.find(x => x.id === portalClientId);
-  const allPosts = DB.posts.filter(p => p.clienteId === portalClientId);
+  if (!c) return;
 
-  // Filter by selected month
-  const posts = allPosts.filter(p => {
-    if (!p.data) return false;
-    const parts = p.data.split('-');
-    return parseInt(parts[0]) === portalMonthFilter.year && parseInt(parts[1]) === portalMonthFilter.month;
-  });
-
-  const monthNames = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-
-  // Update header client name
+  // Update header
   const nameEl = document.getElementById('portalClientName');
-  if (nameEl && c) nameEl.textContent = c.nome;
+  if (nameEl) nameEl.textContent = c.nome;
+  const nameDisplayEl = document.getElementById('portalClientNameDisplay');
+  if (nameDisplayEl) nameDisplayEl.textContent = c.nome;
 
-  // Update logo area
+  // Apply logo
   const logoEl = document.getElementById('portalLogoDisplay');
-  if (logoEl && !logoEl.querySelector('img') && c) logoEl.textContent = c.nome;
-
-  // Update section subtitle with month info
-  const sub = document.getElementById('portalClientSub');
-  if (sub) sub.textContent = `Conteúdos de ${monthNames[portalMonthFilter.month]} ${portalMonthFilter.year} — ${c?c.nome:''}`;
-
-  document.getElementById('portalPostsGrid').innerHTML = posts.length ? posts.map(p => {
-    const imgs = p.images && p.images.length ? p.images : (p.media ? [p.media] : []);
-    const thumbHtml = imgs.length
-      ? `<img src="${imgs[0]}" style="width:100%;height:100%;object-fit:cover;">${p.tipo==='Carrossel'&&imgs.length>1?`<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.65);color:white;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;">▤ ${imgs.length}</div>`:''}`
-      : '🖼️';
-    return `<div class="post-card" onclick="openPortalPost('${p.id}')" style="cursor:pointer;">
-      <div class="post-card-img" style="position:relative;">${thumbHtml}</div>
-      <div class="post-card-body">
-        <div class="post-card-status"><span class="badge badge-${p.status}">${capitalize(p.status)}</span></div>
-        <div class="post-card-title">${p.titulo}</div>
-        <div class="post-card-meta">${p.tipo} • ${formatDate(p.data)}${p.hora?' às '+p.hora:''}</div>
-        <div class="post-card-meta" style="margin-top:4px;">${socialIconsHtml(p.redes)}</div>
-      </div>
-    </div>`;
-  }).join('') : `<div class="empty-state"><div class="empty-state-icon">📭</div>Nenhum conteúdo em ${monthNames[portalMonthFilter.month]} ${portalMonthFilter.year}.</div>`;
-}
-
-function buildCarouselHTML(images, idPrefix) {
-  if (!images || images.length === 0) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:60px;">🖼️</div>';
-  if (images.length === 1) return `<img src="${images[0]}" style="width:100%;height:100%;object-fit:contain;">`;
-  const slides = images.map((src,i)=>`<div class="carousel-slide"><img src="${src}"></div>`).join('');
-  const dots = images.map((_,i)=>`<div class="carousel-dot${i===0?' active':''}" onclick="goSlide('${idPrefix}',${i})"></div>`).join('');
-  return `
-    <div class="carousel-wrap" id="cwrap-${idPrefix}">
-      <div class="carousel-track" id="ctrack-${idPrefix}">${slides}</div>
-      ${images.length>1?`<button class="carousel-btn prev" onclick="prevSlide('${idPrefix}')">‹</button><button class="carousel-btn next" onclick="nextSlide('${idPrefix}')">›</button>`:''}
-      <div class="carousel-dots">${dots}</div>
-      <div class="carousel-count" id="ccount-${idPrefix}">1 / ${images.length}</div>
-    </div>`;
-}
-
-const carouselState = {};
-function goSlide(id, idx) {
-  const track = document.getElementById('ctrack-'+id);
-  const slides = track.querySelectorAll('.carousel-slide');
-  const count = slides.length;
-  carouselState[id] = Math.max(0, Math.min(idx, count-1));
-  track.style.transform = `translateX(-${carouselState[id]*100}%)`;
-  document.querySelectorAll(`#cwrap-${id} .carousel-dot`).forEach((d,i)=>d.classList.toggle('active',i===carouselState[id]));
-  const cc = document.getElementById('ccount-'+id); if(cc) cc.textContent=`${carouselState[id]+1} / ${count}`;
-}
-function prevSlide(id) { goSlide(id,(carouselState[id]||0)-1); }
-function nextSlide(id) { goSlide(id,(carouselState[id]||0)+1); }
-
-function openPortalPost(postId) {
-  currentPortalPostId = postId;
-  const p = DB.posts.find(x=>x.id===postId);
-  if (!p) return;
-  document.getElementById('pmTitle').textContent = p.titulo;
-  document.getElementById('pmDate').textContent = `${formatDateLong(p.data)} às ${p.hora}`;
-  document.getElementById('pmStatus').innerHTML = `<span class="badge badge-${p.status}">${capitalize(p.status)}</span>`;
-  document.getElementById('pmMeta').innerHTML = `<span class="badge-tipo">${p.tipo}</span>${socialIconsHtml(p.redes)}`;
-  document.getElementById('pmLegenda').textContent = p.legenda || 'Sem legenda.';
-
-  const imgs = p.images && p.images.length ? p.images : (p.media ? [p.media] : []);
-  const imgEl = document.getElementById('portalModalImg');
-  imgEl.style.aspectRatio = '4/5';
-  imgEl.style.background = '#000';
-  if (p.tipo === 'Carrossel' && imgs.length > 0) {
-    imgEl.style.cursor = 'default';
-    imgEl.innerHTML = buildCarouselHTML(imgs, 'portal');
-  } else if (imgs.length > 0) {
-    const src = imgs[0];
-    imgEl.style.cursor = 'zoom-in';
-    imgEl.innerHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:contain;" onclick="openLightbox('${src}')" title="Clique para ampliar">`;
-  } else {
-    imgEl.style.cursor = 'default';
-    imgEl.innerHTML = '🖼️';
+  if (logoEl) {
+    if (logoDataUrl) {
+      logoEl.innerHTML = '<img src="' + logoDataUrl + '" style="height:40px;object-fit:contain;">';
+    } else {
+      logoEl.textContent = 'AGÊNCIA';
+    }
   }
-  carouselState['portal'] = 0;
-  renderPortalComments(p);
-  openModal('portalPostModal');
+
+  // Setup user selector from marketing contacts
+  const mktContacts = c.mktContacts || [];
+  const userWrap = document.getElementById('portalUserSelectWrap');
+  const userDropdown = document.getElementById('portalUserDropdown');
+  if (userWrap && mktContacts.length > 0) {
+    userWrap.style.display = 'block';
+    userDropdown.innerHTML = mktContacts.map((ct,i) =>
+      '<div class="portal-user-option' + (portalCurrentUser === ct.nome ? ' selected' : '') + '" onclick="selectPortalUser(' + JSON.stringify(ct.nome) + ')">' + ct.nome + (ct.cargo ? ' <span style=\'font-size:10px;color:var(--text-muted);\'>' + ct.cargo + '</span>' : '') + '</div>'
+    ).join('');
+    const labelEl = document.getElementById('portalCurrentUserLabel');
+    if (labelEl) labelEl.textContent = portalCurrentUser || 'Identificar-se ▾';
+  }
+
+  // Get demands for this client
+  const demands = wfDemands.filter(d => String(d.clienteId) === String(portalClientId));
+
+  // Notification: demands without action > 2 days
+  const now = Date.now();
+  const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
+  const stale = demands.filter(d => {
+    if (!d.dataEntrada) return false;
+    const created = new Date(d.dataEntrada).getTime();
+    return (now - created) > twoDaysMs && d.status !== 'cliente' && d.status !== 'finalizado' && d.status !== 'aprovado';
+  });
+  const notifArea = document.getElementById('portalNotifArea');
+  const notifList = document.getElementById('portalNotifList');
+  if (notifArea && notifList) {
+    if (stale.length > 0) {
+      notifArea.classList.add('has-items');
+      notifList.innerHTML = stale.map(d => '<div class="portal-notif-item">📋 <strong>' + d.nome + '</strong> — aberta em ' + formatDate(d.dataEntrada) + '</div>').join('');
+    } else {
+      notifArea.classList.remove('has-items');
+    }
+  }
+
+  // Show approval popup if there are demands in Em Aprovação that haven't been clicked
+  const pendingApproval = demands.filter(d => getClientDemandStatus(d) === 'emaprovacao' && !portalNewAttachSeen[d.id]);
+  if (pendingApproval.length > 0) {
+    const popup = document.getElementById('approvalPopup');
+    const msg = document.getElementById('approvalPopupMsg');
+    if (popup && msg) {
+      msg.textContent = 'Você tem ' + pendingApproval.length + ' demanda(s) aguardando aprovação.';
+      popup.classList.add('show');
+    }
+  }
+
+  // Render kanban
+  renderClientKanban(demands);
 }
 
-function openCarouselModal(postId) {
-  const p = DB.posts.find(x=>x.id===postId);
-  if (!p) return;
-  const imgs = p.images && p.images.length ? p.images : (p.media ? [p.media] : []);
-  document.getElementById('postDetailContent').innerHTML = `
-    <div style="margin-bottom:14px;">${buildCarouselHTML(imgs,'detail')}</div>
-    <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;"><strong>${p.titulo}</strong> — ${imgs.length} imagem(ns)</div>
-    <div style="display:flex;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="closeModal('postDetailModal')">Fechar</button>
-    </div>`;
-  carouselState['detail'] = 0;
-  openModal('postDetailModal');
+function renderClientKanban(demands) {
+  const board = document.getElementById('clientKanban');
+  if (!board) return;
+
+  board.innerHTML = CLIENT_KANBAN_COLS.map(col => {
+    const colDemands = demands.filter(d => getClientDemandStatus(d) === col.id);
+    return '<div class="client-lane">' +
+      '<div class="client-lane-header">' +
+        '<div class="client-lane-title" style="color:' + col.color + ';">' + col.label + '</div>' +
+        '<span class="client-lane-count">' + colDemands.length + '</span>' +
+      '</div>' +
+      '<div class="client-lane-cards">' +
+        (colDemands.length ? colDemands.map(d => renderClientCard(d)).join('') :
+        '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px 0;">Nenhuma demanda</div>') +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
 
-function renderPortalComments(p) {
-  const el = document.getElementById('pmComments');
-  el.innerHTML = p.comments.length ?
-    p.comments.map(c=>`<div class="comment-bubble">${c.text}<div class="comment-meta">${c.author} • ${c.date}</div></div>`).join('') :
-    '<div style="font-size:12px;color:var(--text-muted);">Nenhum comentário ainda.</div>';
+function renderClientCard(d) {
+  const clientStatus = getClientDemandStatus(d);
+  const isUrgent = d.subtarefas && d.subtarefas.length === 0 && d.dataEntrega && getDaysLeft(d.dataEntrega) < 3 && getDaysLeft(d.dataEntrega) >= 0;
+  const isNewAttach = d.novosAnexos && !portalNewAttachSeen[d.id];
+  const isCancelRequest = d.cancelRequest;
+
+  // Progress from subtasks
+  const prog = getWfProgress(d);
+  const progLabel = prog < 20 ? 'Início' : prog < 80 ? 'Calma que estamos chegando' : 'Sua demanda está a caminho';
+
+  // Delivery forecast from last subtask date
+  const lastSubDate = (d.subtarefas || [])
+    .filter(s => s.dataEntrega || d.dataEntrega)
+    .map(s => s.dataEntrega || d.dataEntrega)
+    .sort().reverse()[0] || d.dataEntrega;
+
+  const deliveryHtml = lastSubDate
+    ? '<div class="client-card-delivery">📅 Sua demanda será entregue em ' + getDaysLeft(lastSubDate) + ' dias — ' + formatDate(lastSubDate) + '</div>'
+    : '';
+
+  const extraClass = (isCancelRequest ? ' red-cancel' : isNewAttach ? ' purple' : '');
+
+  return '<div class="client-card' + extraClass + '" onclick="openClientDemandPanel('' + d.id + '')">' +
+    '<div class="client-card-title">' + d.nome + '</div>' +
+    '<div class="client-card-meta">📅 Prazo: ' + formatDate(d.dataEntrega) + (d.tipo ? ' · ' + (d.tipo === 'digital' ? '💻 Digital' : '🖨️ Impresso') : '') + '</div>' +
+    '<div class="client-card-chips">' +
+      (isUrgent ? '<span class="client-card-chip urgent">🔴 Urgente</span>' : '') +
+      (isNewAttach ? '<span class="client-card-chip new-attach">📎 Novo anexo</span>' : '') +
+      (isCancelRequest ? '<span class="client-card-chip" style="background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:var(--red);">🚫 Cancelamento solicitado</span>' : '') +
+    '</div>' +
+    (d.subtarefas && d.subtarefas.length > 0 ? '<div class="client-card-progress">' +
+      '<div class="client-card-progress-track"><div class="client-card-progress-fill" style="width:' + prog + '%;"></div></div>' +
+      '<div class="client-card-progress-label">' + progLabel + ' — ' + prog + '%</div>' +
+    '</div>' : '') +
+    deliveryHtml +
+  '</div>';
 }
 
-async function sendPortalComment() {
-  const input = document.getElementById('pmCommentInput');
-  const text = input.value.trim();
-  if (!text) return;
-  const p = DB.posts.find(x=>x.id===currentPortalPostId);
-  if (!p) return;
-  const newComment = {text, author:'Cliente', date:new Date().toLocaleString('pt-BR')};
-  p.comments.push(newComment);
-  renderPortalComments(p);
-  input.value='';
-  await sbUpdate('posts', currentPortalPostId, { comments: p.comments });
-  await logHistory('Comentário adicionado', getClientName(p.clienteId), `Comentário em "${p.titulo}": "${text}"`, 'Cliente');
+function openClientDemandPanel(demandId) {
+  const d = wfDemands.find(x => x.id === demandId);
+  if (!d) return;
+  currentClientDemandId = demandId;
+
+  // Mark as seen (clear purple)
+  if (d.novosAnexos) portalNewAttachSeen[demandId] = true;
+
+  const clientStatus = getClientDemandStatus(d);
+  const statusLabel = CLIENT_STATUS_LABELS[clientStatus] || clientStatus;
+  const statusColor = CLIENT_STATUS_COLORS[clientStatus] || 'var(--text-muted)';
+
+  // Header
+  document.getElementById('cdpTitle').textContent = d.nome;
+  document.getElementById('cdpMeta').textContent = (d.tipo === 'digital' ? '💻 Digital' : d.tipo === 'impresso' ? '🖨️ Impresso' : '') + ' · Prazo: ' + formatDate(d.dataEntrega);
+  document.getElementById('cdpStatusBadge').innerHTML = '<span style="font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(0,0,0,.2);color:' + statusColor + ';">' + statusLabel + '</span>';
+
+  // Progress
+  const prog = getWfProgress(d);
+  const progMsg = prog < 20 ? 'Início' : prog < 80 ? 'Calma que estamos chegando' : 'Sua demanda está a caminho';
+
+  // Last subtask delivery date
+  const lastSubDate = (d.subtarefas || [])
+    .filter(s => s.dataEntrega || d.dataEntrega)
+    .map(s => s.dataEntrega || d.dataEntrega)
+    .sort().reverse()[0] || d.dataEntrega;
+  const daysLeft = getDaysLeft(lastSubDate);
+  const deliveryMsg = lastSubDate ? 'Sua demanda será entregue em ' + daysLeft + ' dias — Data prevista: ' + formatDate(lastSubDate) : '';
+
+  // Approval files & links from subtasks
+  const allFiles = (d.subtarefas || []).flatMap(s => s.aprovacaoFiles || []);
+  const allLinks = (d.subtarefas || []).flatMap(s => s.aprovacaoLinks || []);
+
+  // Comments
+  const comments = d.clientComments || [];
+
+  let contentHTML = '';
+
+  // Progress section
+  if (d.subtarefas && d.subtarefas.length > 0) {
+    contentHTML += '<div class="delivery-progress-wrap">' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px;">' +
+        '<span>Início</span><span style="color:var(--accent);font-weight:700;">' + prog + '%</span><span>100%</span>' +
+      '</div>' +
+      '<div class="delivery-progress-track"><div class="delivery-progress-fill" style="width:' + prog + '%;"></div></div>' +
+      '<div class="delivery-progress-msg">' + progMsg + '</div>' +
+    '</div>';
+    if (deliveryMsg) {
+      contentHTML += '<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:14px;text-align:center;">📅 ' + deliveryMsg + '</div>';
+    }
+  }
+
+  // Info grid
+  contentHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">' +
+    '<div class="detail-field"><div class="detail-field-label">Nome do job</div><div class="detail-field-value">' + d.nome + '</div></div>' +
+    '<div class="detail-field"><div class="detail-field-label">Tipo</div><div class="detail-field-value">' + (d.tipo === 'digital' ? '💻 Digital' : d.tipo === 'impresso' ? '🖨️ Impresso' : '—') + '</div></div>' +
+    '<div class="detail-field"><div class="detail-field-label">Prazo solicitado</div><div class="detail-field-value">' + formatDate(d.dataEntrega) + '</div></div>' +
+    '<div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value" style="color:' + statusColor + ';font-weight:700;">' + statusLabel + '</div></div>' +
+  '</div>';
+
+  // Briefing / comments
+  if (d.obs) {
+    contentHTML += '<div class="detail-field" style="margin-bottom:14px;"><div class="detail-field-label">Briefing</div><div class="detail-field-value legenda">' + d.obs + '</div></div>';
+  }
+
+  // Approval materials (files + links from subtasks)
+  if (allFiles.length > 0 || allLinks.length > 0) {
+    contentHTML += '<div class="detail-field" style="margin-bottom:14px;"><div class="detail-field-label">📎 Materiais para Aprovação</div>';
+    if (allFiles.length > 0) {
+      contentHTML += '<div class="client-attach-grid">' +
+        allFiles.map(f => '<div class="client-attach-thumb" onclick="openLightbox('' + f.url + '')">' +
+          (f.url.match(/\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image') ? '<img src="' + f.url + '">' : '📄') +
+        '</div>').join('') +
+      '</div>';
+    }
+    if (allLinks.length > 0) {
+      contentHTML += '<div style="display:flex;flex-direction:column;gap:4px;margin-top:8px;">' +
+        allLinks.map(lk => '<a href="' + lk.url + '" target="_blank" rel="noopener" class="client-attach-link">🔗 ' + (lk.label || lk.url) + '</a>').join('') +
+      '</div>';
+    }
+    contentHTML += '</div>';
+  }
+
+  // Approval buttons (only when status = emaprovacao)
+  if (clientStatus === 'emaprovacao') {
+    contentHTML += '<div class="approval-btns">' +
+      '<button class="btn btn-aprovar" onclick="clientApprove()">✅ APROVADO</button>' +
+      '<button class="btn btn-reprovar" onclick="clientReject()">✕ REPROVADO</button>' +
+    '</div>' +
+    '<div id="cdpRejectBox" style="display:none;margin-bottom:14px;padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);">' +
+      '<div style="font-size:12px;color:var(--red);font-weight:600;margin-bottom:8px;">Por favor, descreva de forma clara quais ajustes precisam ser realizados:</div>' +
+      '<textarea class="form-input" id="cdpRejectReason" rows="3" placeholder="Descreva o que precisa ser alterado..." style="margin-bottom:8px;"></textarea>' +
+      '<button class="btn btn-reprovar" style="width:100%;justify-content:center;" onclick="confirmClientReject()">Confirmar reprovação</button>' +
+    '</div>';
+  }
+
+  // Chat / comments
+  contentHTML += '<div style="margin-bottom:8px;">' +
+    '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">💬 Comentários</div>' +
+    '<div class="chat-wrap" id="cdpChatList">' +
+      (comments.length > 0 ?
+        comments.map(c => '<div class="chat-bubble ' + (c.author === (portalCurrentUser || 'Cliente') ? 'client' : '') + '">' +
+          c.text + '<div class="chat-meta">👤 ' + c.author + ' · ' + c.date + '</div>' +
+        '</div>').join('') :
+        '<div style="font-size:12px;color:var(--text-muted);">Nenhum comentário ainda.</div>') +
+    '</div>' +
+    '<div style="display:flex;gap:6px;margin-top:8px;">' +
+      '<textarea class="comment-input" rows="2" placeholder="Escreva um comentário (Enter para enviar)..." id="cdpChatInput" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendClientComment()}"></textarea>' +
+      '<button class="comment-send" onclick="sendClientComment()">➤</button>' +
+    '</div>' +
+  '</div>';
+
+  document.getElementById('cdpContent').innerHTML = contentHTML;
+
+  // Footer: cancel button
+  const canCancel = clientStatus !== 'finalizado';
+  document.getElementById('cdpFooter').innerHTML = canCancel
+    ? '<button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="requestCancelDemand()">🚫 Cancelar Demanda</button>'
+    : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:4px;">Esta demanda foi finalizada.</div>';
+
+  document.getElementById('clientPanelOverlay').classList.add('open');
+  document.getElementById('clientDetailPanel').classList.add('open');
 }
 
-async function portalApprove() {
-  const p = DB.posts.find(x=>x.id===currentPortalPostId);
-  if (!p) return;
-  p.status = 'aprovado';
-  document.getElementById('pmStatus').innerHTML = `<span class="badge badge-aprovado">Aprovado</span>`;
-  await sbUpdate('posts', currentPortalPostId, { status: 'aprovado' });
-  await logHistory('Conteúdo aprovado', getClientName(p.clienteId), `"${p.titulo}" aprovado pelo cliente`, 'Cliente');
-  renderPortalPosts(portalClientId);
-  showToast('Conteúdo aprovado com sucesso!');
+function closeClientPanel() {
+  document.getElementById('clientPanelOverlay').classList.remove('open');
+  document.getElementById('clientDetailPanel').classList.remove('open');
+  currentClientDemandId = null;
 }
 
-async function portalReject() {
-  const input = document.getElementById('pmCommentInput');
-  const comment = input.value.trim();
-  if (!comment) {
-    input.style.borderColor = 'var(--red)';
-    input.placeholder = '⚠️ Informe o motivo da reprovação antes de reprovar...';
-    input.focus();
-    setTimeout(() => { input.style.borderColor=''; input.placeholder='Adicionar comentário...'; }, 3000);
+async function clientApprove() {
+  const d = wfDemands.find(x => x.id === currentClientDemandId);
+  if (!d) return;
+  if (!confirm('Confirmar APROVAÇÃO desta demanda?')) return;
+
+  d.status = 'aprovado';
+  await sbUpdate('workflow_demandas', d.id, { status: 'aprovado' });
+  await logHistory('Demanda aprovada pelo cliente', getClientName(d.clienteId), '"' + d.nome + '" aprovada', portalCurrentUser || 'Cliente');
+  await loadAllData();
+  showToast('✅ Demanda aprovada com sucesso!');
+  closeClientPanel();
+  renderClientPortal();
+}
+
+function clientReject() {
+  const box = document.getElementById('cdpRejectBox');
+  if (box) {
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    if (box.style.display === 'block') {
+      const ta = document.getElementById('cdpRejectReason');
+      if (ta) ta.focus();
+    }
+  }
+}
+
+async function confirmClientReject() {
+  const reason = document.getElementById('cdpRejectReason')?.value?.trim();
+  if (!reason) {
+    showToast('Descreva o motivo da reprovação antes de confirmar.', true);
     return;
   }
-  const p = DB.posts.find(x=>x.id===currentPortalPostId);
-  if (!p) return;
-  p.status = 'reprovado'; p.everRejected = true;
-  const newComment = {text:`[REPROVADO] ${comment}`, author:'Cliente', date:new Date().toLocaleString('pt-BR')};
-  p.comments.push(newComment);
-  document.getElementById('pmStatus').innerHTML = `<span class="badge badge-reprovado">Reprovado</span>`;
-  input.value = ''; input.style.borderColor = '';
-  renderPortalComments(p);
-  await sbUpdate('posts', currentPortalPostId, { status:'reprovado', ever_rejected:true, comments: p.comments });
-  await logHistory('Conteúdo reprovado', getClientName(p.clienteId), `"${p.titulo}" reprovado. Motivo: ${comment}`, 'Cliente');
-  renderPortalPosts(portalClientId);
-  showToast('Conteúdo reprovado. Comentário registrado.', true);
+  const d = wfDemands.find(x => x.id === currentClientDemandId);
+  if (!d) return;
+
+  d.status = 'reprovado';
+  if (!d.clientComments) d.clientComments = [];
+  d.clientComments.push({ text: '[REPROVADO] ' + reason, author: portalCurrentUser || 'Cliente', date: new Date().toLocaleString('pt-BR') });
+
+  await sbUpdate('workflow_demandas', d.id, { status: 'reprovado', client_comments: d.clientComments });
+  await logHistory('Demanda reprovada pelo cliente', getClientName(d.clienteId), '"' + d.nome + '" reprovada. Motivo: ' + reason, portalCurrentUser || 'Cliente');
+  await loadAllData();
+  showToast('Demanda reprovada. Motivo registrado.', true);
+  closeClientPanel();
+  renderClientPortal();
+}
+
+async function requestCancelDemand() {
+  if (!confirm('Tem certeza de que deseja solicitar o cancelamento desta demanda?')) return;
+  const d = wfDemands.find(x => x.id === currentClientDemandId);
+  if (!d) return;
+
+  d.cancelRequest = true;
+  await sbUpdate('workflow_demandas', d.id, { cancel_request: true });
+  await logHistory('Cancelamento solicitado pelo cliente', getClientName(d.clienteId), '"' + d.nome + '" — cancelamento solicitado', portalCurrentUser || 'Cliente');
+  showToast('Solicitação de cancelamento registrada.', true);
+  closeClientPanel();
+  renderClientPortal();
+}
+
+async function sendClientComment() {
+  const input = document.getElementById('cdpChatInput');
+  const text = input?.value?.trim();
+  if (!text) return;
+
+  const d = wfDemands.find(x => x.id === currentClientDemandId);
+  if (!d) return;
+
+  if (!d.clientComments) d.clientComments = [];
+  const comment = { text, author: portalCurrentUser || 'Cliente', date: new Date().toLocaleString('pt-BR') };
+  d.clientComments.push(comment);
+
+  input.value = '';
+  await sbUpdate('workflow_demandas', d.id, { client_comments: d.clientComments });
+  await logHistory('Comentário do cliente', getClientName(d.clienteId), '"' + d.nome + '": ' + text, portalCurrentUser || 'Cliente');
+
+  // Re-render chat
+  const chatList = document.getElementById('cdpChatList');
+  if (chatList) {
+    chatList.innerHTML = d.clientComments.map(c => '<div class="chat-bubble ' + (c.author === (portalCurrentUser || 'Cliente') ? 'client' : '') + '">' +
+      c.text + '<div class="chat-meta">👤 ' + c.author + ' · ' + c.date + '</div>' +
+    '</div>').join('');
+    chatList.scrollTop = chatList.scrollHeight;
+  }
+}
+
+function selectPortalUser(name) {
+  portalCurrentUser = name;
+  const labelEl = document.getElementById('portalCurrentUserLabel');
+  if (labelEl) labelEl.textContent = name;
+  const dropdown = document.getElementById('portalUserDropdown');
+  if (dropdown) {
+    dropdown.classList.remove('open');
+    // Update selected state
+    dropdown.querySelectorAll('.portal-user-option').forEach(el => {
+      el.classList.toggle('selected', el.textContent.startsWith(name));
+    });
+  }
+  renderClientPortal();
+}
+
+function togglePortalUserDropdown(event) {
+  event.stopPropagation();
+  const dropdown = document.getElementById('portalUserDropdown');
+  if (dropdown) dropdown.classList.toggle('open');
+}
+
+function closeApprovalPopup() {
+  const popup = document.getElementById('approvalPopup');
+  if (popup) popup.classList.remove('show');
+}
+
+// ── Nova Demanda Modal ──
+function openNovaDemandaModal() {
+  ndLinks = [];
+  ndFiles = [];
+  document.getElementById('ndNome').value = '';
+  document.getElementById('ndComentario').value = '';
+  document.getElementById('ndDataEntrega').value = '';
+  document.getElementById('ndUrgencyWarning').style.display = 'none';
+  document.getElementById('ndFileWarning').style.display = 'none';
+  document.getElementById('ndFiles').value = '';
+  document.getElementById('ndFilePreviews').innerHTML = '';
+  document.getElementById('ndLinksList').innerHTML = '';
+  document.getElementById('ndLinkInput').value = '';
+  openModal('novaDemandaModal');
+  document.getElementById('ndDataEntrega').addEventListener('change', checkNdUrgency);
+  document.getElementById('ndFiles').addEventListener('change', handleNdFiles);
+}
+
+function checkNdUrgency() {
+  const dateVal = document.getElementById('ndDataEntrega').value;
+  const warn = document.getElementById('ndUrgencyWarning');
+  if (!dateVal || !warn) return;
+  const days = getDaysLeft(dateVal);
+  warn.style.display = (days !== null && days < 3) ? 'block' : 'none';
+}
+
+function handleNdFiles(event) {
+  const files = Array.from(event.target.files);
+  const warn = document.getElementById('ndFileWarning');
+  const previews = document.getElementById('ndFilePreviews');
+  let hasOversize = false;
+
+  files.forEach(file => {
+    if (file.size > 10 * 1024 * 1024) {
+      hasOversize = true;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      ndFiles.push({ url: e.target.result, nome: file.name });
+      const div = document.createElement('div');
+      div.style.cssText = 'width:64px;height:64px;border-radius:6px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
+      div.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+      previews.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+  if (warn) warn.style.display = hasOversize ? 'block' : 'none';
+}
+
+function addNdLink() {
+  const input = document.getElementById('ndLinkInput');
+  let url = input?.value?.trim();
+  if (!url) return;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+  ndLinks.push(url);
+  input.value = '';
+  const list = document.getElementById('ndLinksList');
+  if (list) {
+    list.innerHTML = ndLinks.map((lk,i) =>
+      '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;font-size:12px;">' +
+        '<span style="color:var(--accent);">🔗</span>' +
+        '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + lk + '</span>' +
+        '<button onclick="ndLinks.splice(' + i + ',1);addNdLink();document.getElementById(\'ndLinkInput\').value=\'\';" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;">✕</button>' +
+      '</div>'
+    ).join('');
+  }
+}
+
+async function salvarNovaDemanda() {
+  const nome = document.getElementById('ndNome')?.value?.trim();
+  const tipo = document.getElementById('ndTipo')?.value;
+  const dataEntrega = document.getElementById('ndDataEntrega')?.value;
+  const comentario = document.getElementById('ndComentario')?.value?.trim();
+
+  if (!nome) return showToast('Informe o nome do job.', true);
+  if (!dataEntrega) return showToast('Informe a data de entrega.', true);
+
+  const days = getDaysLeft(dataEntrega);
+  const isUrgent = days !== null && days < 3;
+
+  showLoading('Enviando solicitação...');
+
+  // Upload files to Cloudinary
+  let uploadedFiles = [];
+  for (const f of ndFiles) {
+    if (f.url.startsWith('data:')) {
+      const blob = await fetch(f.url).then(r => r.blob());
+      const url = await uploadToCloudinary(new File([blob], f.nome, { type: blob.type }));
+      if (url) uploadedFiles.push({ url, nome: f.nome });
+    }
+  }
+
+  const sbData = {
+    nome,
+    cliente_id: portalClientId,
+    responsavel: '',
+    data_entrega: dataEntrega,
+    data_entrada: new Date().toISOString().split('T')[0],
+    status: 'solicitado_cliente',
+    obs: comentario || '',
+    tipo: tipo,
+    version: 1,
+    is_alteracao: false,
+    subtarefas: [],
+    is_urgent: isUrgent,
+    client_attachments: uploadedFiles,
+    client_links: ndLinks,
+    client_comments: [],
+    cancel_request: false,
+  };
+
+  try {
+    await sbInsert('workflow_demandas', sbData);
+    await logHistory('Nova demanda solicitada pelo cliente', getClientName(portalClientId),
+      '"' + nome + '" — prazo: ' + formatDate(dataEntrega) + (isUrgent ? ' 🔴 URGENTE' : ''), portalCurrentUser || 'Cliente');
+    await loadAllData();
+    closeModal('novaDemandaModal');
+    renderClientPortal();
+    showToast('✅ Sua solicitação foi enviada com sucesso!');
+  } catch(e) {
+    hideLoading();
+    showToast('Erro ao enviar solicitação', true);
+  }
+}
+
+function showPortal(clientId) {
+  const cid = clientId || portalClientId || null;
+  if (cid) portalClientId = cid;
+  document.getElementById('loginPage').classList.remove('show');
+  document.getElementById('portalPage').classList.add('show');
+  renderClientPortal();
+}
+
+function hidePortal() {
+  document.getElementById('portalPage').classList.remove('show');
+  document.getElementById('loginPage').classList.add('show');
 }
 
 function shareClient(clientId) {
   const base = window.location.href.split('?')[0];
-  const y = currentMonthFilter.year;
-  const m = currentMonthFilter.month;
-  const link = `${base}?portal=1&clientId=${clientId}&year=${y}&month=${m}`;
+  const link = base + '?portal=1&clientId=' + clientId;
   copyToClipboard(link, 'Link do cliente copiado!');
 }
 
@@ -4598,19 +5286,32 @@ function renderCard(d) {
   const subAreas = [...new Set((d.subtarefas||[]).filter(s=>s.area).map(s=>s.area))];
   const areaChips = subAreas.map(a=>`<span class="wf-card-chip ${AREA_CLASS[a]||''}" style="font-size:9px;">${AREAS[a]||a}</span>`).join('');
   const draggable = currentUserPerm === 'total' ? 'draggable="true"' : '';
+
+  // Client portal states
+  const isCancel = d.cancelRequest;
+  const isNewAttach = d.novosAnexos;
+  const hasClientComments = d.clientComments && d.clientComments.length > 0;
+  let cardBorder = '';
+  let cardBg = '';
+  if (isCancel) { cardBorder = 'border-color:var(--red)!important;'; cardBg = 'background:rgba(239,68,68,.06)!important;'; }
+  else if (isNewAttach) { cardBorder = 'border-color:var(--purple)!important;'; cardBg = 'background:rgba(168,85,247,.06)!important;'; }
+
   return `<div class="wf-card" ${draggable}
     onclick="if(!isDragging)openWfPanel('${d.id}')"
     ondragstart="onCardDragStart(event,'${d.id}')"
-    ondragend="onCardDragEnd(event)">
+    ondragend="onCardDragEnd(event)"
+    style="${cardBorder}${cardBg}">
     <div class="wf-card-color-bar" style="background:${color};"></div>
     <div class="wf-card-header">
-      <div class="wf-card-title">${d.nome}${d.isAlteracao?` <span style="font-size:9px;color:var(--text-muted);">v${d.version}</span>`:''}
+      <div class="wf-card-title">${d.nome}${d.isAlteracao ? `<span style="font-size:9px;color:var(--text-muted);">v${d.version}</span>` : ''}
       </div>
     </div>
     <div class="wf-card-meta">
       ${areaChips}
-      ${urgClass?`<span class="wf-card-chip ${urgClass}">${urgClass==='urgent'?'🔴 Urgente':'⚠️ Atenção'}</span>`:''}
-      ${c?`<span class="wf-card-client-tag" style="background:${color};">${c.nome}</span>`:''}
+      ${urgClass ? `<span class="wf-card-chip ${urgClass}">${urgClass==='urgent'?'🔴 Urgente':'⚠️ Atenção'}</span>` : ''}
+      ${isCancel ? '<span class="wf-card-chip" style="background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:var(--red);font-size:9px;">🚫 Cancelamento</span>' : ''}
+      ${isNewAttach ? '<span class="wf-card-chip" style="background:rgba(168,85,247,.15);border-color:rgba(168,85,247,.3);color:var(--purple);font-size:9px;">📎 Anexo</span>' : ''}
+      ${c ? `<span class="wf-card-client-tag" style="background:${color};">${c.nome}</span>` : ''}
     </div>
     <div class="wf-progress-bar">
       <div class="wf-progress-track"><div class="wf-progress-fill" style="width:${prog}%"></div></div>
@@ -4619,11 +5320,11 @@ function renderCard(d) {
     <div class="wf-card-footer">
       <div class="wf-avatar" title="${d.responsavel||'—'}">${(d.responsavel||'?')[0]}</div>
       <div class="wf-deadline ${urgClass}">${deadlineLabel}</div>
-      ${currentUserPerm==='total'?`<div style="color:var(--text-muted);font-size:12px;margin-left:4px;" title="Arraste para mover">⠿</div>`:''}
+      ${hasClientComments ? '<span title="Há comentários do cliente" style="font-size:12px;margin-left:4px;">💬</span>' : ''}
+      ${currentUserPerm==='total' ? '<div style="color:var(--text-muted);font-size:12px;margin-left:4px;" title="Arraste para mover">⠿</div>' : ''}
     </div>
   </div>`;
 }
-
 function renderWfList() {
   const demands = getFilteredDemands();
   document.getElementById('wfListBody').innerHTML = demands.map(d=>{
@@ -4725,6 +5426,22 @@ function openWfPanel(id) {
   document.getElementById('wfDpProgressBar').style.width = prog+'%';
   document.getElementById('wfDpObs').textContent = d.obs||'—';
 
+  // Show client comments if any
+  const wfClientCommentsEl = document.getElementById('wfClientComments');
+  if (wfClientCommentsEl) {
+    const cc = d.clientComments || [];
+    if (cc.length > 0) {
+      wfClientCommentsEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">💬 Comentários do Cliente</div>' +
+        cc.map(c => '<div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:6px;font-size:12px;">' +
+          '<div>' + c.text + '</div>' +
+          '<div style="font-size:10px;color:var(--text-muted);margin-top:3px;">👤 ' + c.author + ' · ' + c.date + '</div>' +
+        '</div>').join('');
+      wfClientCommentsEl.style.display = 'block';
+    } else {
+      wfClientCommentsEl.style.display = 'none';
+    }
+  }
+
   // Status — editable only for total permission
   const colColors = {espera:'#4a5a72',producao:'var(--blue)',aprovacao:'var(--orange)',cliente:'var(--green)'};
   const colLabels = {espera:'Em espera',producao:'Em produção',aprovacao:'Aprovação interna',cliente:'Com o cliente'};
@@ -4769,8 +5486,11 @@ async function wfChangeStatus(val) {
   const d = wfDemands.find(x=>x.id===currentWfDemandId);
   if (!d) return;
   d.status = val;
-  await sbUpdate('workflow_demandas', currentWfDemandId, { status: val });
-  await logHistory('Status de demanda alterado', getClientName(d.clienteId), `"${d.nome}" → ${WF_COLS.find(c=>c.id===val)?.label||val}`);
+  const updateData = { status: val };
+  // When moved to 'cliente' (Com o cliente), set novos_anexos=true to trigger purple
+  if (val === 'cliente') updateData.novos_anexos = true;
+  await sbUpdate('workflow_demandas', currentWfDemandId, updateData);
+  await logHistory('Status de demanda alterado', getClientName(d.clienteId), '"' + d.nome + '" → ' + (WF_COLS.find(c=>c.id===val)?.label||val));
   renderWorkflow();
 }
 
@@ -6154,6 +6874,7 @@ function exportAnalyticsCSV(type) {
   });
 
   const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download = 'analytics-'+(isColab?u?.nome||'colab':'cliente')+'.csv';
   a.click();
@@ -6205,12 +6926,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginEl = document.getElementById('loginEmail');
   if (loginEl) loginEl.value = ['admin','clicaeaprova.com.br'].join('@');
 
+  // Close portal user dropdown when clicking outside
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.portal-user-select')) {
+      const d = document.getElementById('portalUserDropdown');
+      if (d) d.classList.remove('open');
+    }
+  });
+
   const params = new URLSearchParams(window.location.search);
   const isPortal = params.get('portal') === '1';
   const clientId = params.get('clientId');
   const postId   = params.get('postId');
-  const year     = parseInt(params.get('year'))  || new Date().getFullYear();
-  const month    = parseInt(params.get('month')) || new Date().getMonth()+1;
 
   if (isPortal) {
     document.getElementById('loginPage').classList.remove('show');
@@ -6219,13 +6946,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backBtn) backBtn.style.display = 'none';
     loadAllData().then(() => {
       const c = DB.clients.find(x => x.id === portalClientId);
-      if (c) document.title = `${c.nome} — Portal de Aprovação`;
-      renderPortalPosts(portalClientId, year, month);
+      if (c) document.title = c.nome + ' — Área do Cliente';
+      renderClientPortal();
       document.getElementById('portalPage').classList.add('show');
-      if (postId) setTimeout(() => openPortalPost(postId), 300);
     });
   }
-});
+});;
 // ── LIGHTBOX ──
 function openLightbox(src) {
   if (!src) return;
