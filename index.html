@@ -2666,7 +2666,7 @@ function hideLoading() {
 }
 
 // ═══════════════════════════════════════
-// DATA STORE — cache local (sincronizado com Supabase)
+// DATA STORE  -  cache local (sincronizado com Supabase)
 // ═══════════════════════════════════════
 const DB = {
   clients: [],
@@ -3185,7 +3185,7 @@ function shareCurrentClient() {
 }
 
 function buildClientTopbarExtra(c, clientId) {
-  // Selects are persistent in HTML — just return share button
+  // Selects are persistent in HTML  -  just return share button
   return ''; // selects are in clientTopbarControls, share button is in that block too
 }
 
@@ -3561,13 +3561,13 @@ function openDetailPanel(postId) {
   document.getElementById('dpSub').textContent = `${getClientName(p.clienteId)} · ${formatDate(p.data)}${p.hora?' às '+p.hora:''}`;
   document.getElementById('dpStatus').innerHTML = `<span class="badge badge-${p.status}">${capitalize(p.status)}</span>`;
   document.getElementById('dpTipo').innerHTML = `<span class="badge-tipo">${p.tipo}</span>`;
-  document.getElementById('dpData').textContent = p.data ? formatDate(p.data) : '—';
-  document.getElementById('dpHora').textContent = p.hora || '—';
-  document.getElementById('dpRedes').innerHTML = p.redes && p.redes.length ? socialIconsHtml(p.redes)+' '+p.redes.join(', ') : '—';
+  document.getElementById('dpData').textContent = p.data ? formatDate(p.data) : ' - ';
+  document.getElementById('dpHora').textContent = p.hora || ' - ';
+  document.getElementById('dpRedes').innerHTML = p.redes && p.redes.length ? socialIconsHtml(p.redes)+' '+p.redes.join(', ') : ' - ';
   document.getElementById('dpLegenda').textContent = p.legenda || 'Sem legenda.';
-  document.getElementById('dpVideo').innerHTML = p.videoLink ? `<a href="${p.videoLink}" target="_blank" style="color:var(--accent);">${p.videoLink}</a>` : '—';
+  document.getElementById('dpVideo').innerHTML = p.videoLink ? `<a href="${p.videoLink}" target="_blank" style="color:var(--accent);">${p.videoLink}</a>` : ' - ';
 
-  // Media — 4:5 ratio, clickable for lightbox
+  // Media  -  4:5 ratio, clickable for lightbox
   const mediaEl = document.getElementById('dpMedia');
   mediaEl.style.aspectRatio = '4/5';
   mediaEl.style.background = '#000';
@@ -3968,7 +3968,7 @@ function renderDashboard() {
   const pendPosts = DB.posts.filter(p=>p.status==='pendente').slice(0,5);
 const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) dpEl.innerHTML = pendPosts.length ?
     pendPosts.map(p=>{
-      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
+      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||' - ';
       return `<div class="pending-item">
         <div style="flex:1;">
           <div class="pending-item-title">${p.titulo}</div>
@@ -3988,7 +3988,7 @@ const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) dpEl.inner
   });
 const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) dn7El.innerHTML = next7.length ?
     next7.map(p=>{
-      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||'—';
+      const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||' - ';
       return `<div class="pending-item" style="border-left-color:var(--blue);">
         <div style="flex:1;">
           <div class="pending-item-title">${p.titulo}</div>
@@ -4202,7 +4202,7 @@ function renderEquipe() {
       <td><div style="margin-bottom:4px;">${secs||'<span style="color:var(--text-muted);font-size:11px;">Nenhuma seção</span>'}</div></td>
       <td><span style="font-size:12px;font-weight:600;color:${editColor};">${editLabel}</span></td>
       <td style="font-size:12px;color:var(--text-muted);">${clientCount}</td>
-      <td style="font-size:12px;color:var(--text-muted);">${u.createdAt||'—'}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${u.createdAt||' - '}</td>
       <td class="relative">
         <button class="dots-btn" onclick="toggleDropdown('u${u.id}',event)">⋯</button>
         <div class="dropdown hidden" id="dd-u${u.id}">
@@ -4482,7 +4482,7 @@ function renderPortalPosts(clientId, year, month) {
 }
 
 // ═══════════════════════════════════════
-// ÁREA DO CLIENTE — PORTAL MODULE
+// ÁREA DO CLIENTE  -  PORTAL MODULE
 // ═══════════════════════════════════════
 
 let portalCurrentUser = null; // name chosen by client contact
@@ -4579,7 +4579,7 @@ function renderClientPortal() {
   if (notifArea && notifList) {
     if (stale.length > 0) {
       notifArea.classList.add('has-items');
-      notifList.innerHTML = stale.map(d => '<div class="portal-notif-item">📋 <strong>' + d.nome + '</strong> — aberta em ' + formatDate(d.dataEntrada) + '</div>').join('');
+      notifList.innerHTML = stale.map(d => '<div class="portal-notif-item">📋 <strong>' + d.nome + '</strong>  -  aberta em ' + formatDate(d.dataEntrada) + '</div>').join('');
     } else {
       notifArea.classList.remove('has-items');
     }
@@ -4636,7 +4636,7 @@ function renderClientCard(d) {
     .sort().reverse()[0] || d.dataEntrega;
 
   const deliveryHtml = lastSubDate
-    ? '<div class="client-card-delivery">📅 Sua demanda será entregue em ' + getDaysLeft(lastSubDate) + ' dias — ' + formatDate(lastSubDate) + '</div>'
+    ? '<div class="client-card-delivery">📅 Sua demanda será entregue em ' + getDaysLeft(lastSubDate) + ' dias  -  ' + formatDate(lastSubDate) + '</div>'
     : '';
 
   const extraClass = (isCancelRequest ? ' red-cancel' : isNewAttach ? ' purple' : '');
@@ -4651,7 +4651,7 @@ function renderClientCard(d) {
     '</div>' +
     (d.subtarefas && d.subtarefas.length > 0 ? '<div class="client-card-progress">' +
       '<div class="client-card-progress-track"><div class="client-card-progress-fill" style="width:' + prog + '%;"></div></div>' +
-      '<div class="client-card-progress-label">' + progLabel + ' — ' + prog + '%</div>' +
+      '<div class="client-card-progress-label">' + progLabel + '  -  ' + prog + '%</div>' +
     '</div>' : '') +
     deliveryHtml +
   '</div>';
@@ -4684,7 +4684,7 @@ function openClientDemandPanel(demandId) {
     .map(s => s.dataEntrega || d.dataEntrega)
     .sort().reverse()[0] || d.dataEntrega;
   const daysLeft = getDaysLeft(lastSubDate);
-  const deliveryMsg = lastSubDate ? 'Sua demanda será entregue em ' + daysLeft + ' dias — Data prevista: ' + formatDate(lastSubDate) : '';
+  const deliveryMsg = lastSubDate ? 'Sua demanda será entregue em ' + daysLeft + ' dias  -  Data prevista: ' + formatDate(lastSubDate) : '';
 
   // Approval files & links from subtasks
   const allFiles = (d.subtarefas || []).flatMap(s => s.aprovacaoFiles || []);
@@ -4712,7 +4712,7 @@ function openClientDemandPanel(demandId) {
   // Info grid
   contentHTML += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">' +
     '<div class="detail-field"><div class="detail-field-label">Nome do job</div><div class="detail-field-value">' + d.nome + '</div></div>' +
-    '<div class="detail-field"><div class="detail-field-label">Tipo</div><div class="detail-field-value">' + (d.tipo === 'digital' ? '💻 Digital' : d.tipo === 'impresso' ? '🖨️ Impresso' : '—') + '</div></div>' +
+    '<div class="detail-field"><div class="detail-field-label">Tipo</div><div class="detail-field-value">' + (d.tipo === 'digital' ? '💻 Digital' : d.tipo === 'impresso' ? '🖨️ Impresso' : ' - ') + '</div></div>' +
     '<div class="detail-field"><div class="detail-field-label">Prazo solicitado</div><div class="detail-field-value">' + formatDate(d.dataEntrega) + '</div></div>' +
     '<div class="detail-field"><div class="detail-field-label">Status</div><div class="detail-field-value" style="color:' + statusColor + ';font-weight:700;">' + statusLabel + '</div></div>' +
   '</div>';
@@ -4840,7 +4840,7 @@ async function requestCancelDemand() {
 
   d.cancelRequest = true;
   await sbUpdate('workflow_demandas', d.id, { cancel_request: true });
-  await logHistory('Cancelamento solicitado pelo cliente', getClientName(d.clienteId), '"' + d.nome + '" — cancelamento solicitado', portalCurrentUser || 'Cliente');
+  await logHistory('Cancelamento solicitado pelo cliente', getClientName(d.clienteId), '"' + d.nome + '"  -  cancelamento solicitado', portalCurrentUser || 'Cliente');
   showToast('Solicitação de cancelamento registrada.', true);
   closeClientPanel();
   renderClientPortal();
@@ -5013,7 +5013,7 @@ async function salvarNovaDemanda() {
   try {
     await sbInsert('workflow_demandas', sbData);
     await logHistory('Nova demanda solicitada pelo cliente', getClientName(portalClientId),
-      '"' + nome + '" — prazo: ' + formatDate(dataEntrega) + (isUrgent ? ' 🔴 URGENTE' : ''), portalCurrentUser || 'Cliente');
+      '"' + nome + '"  -  prazo: ' + formatDate(dataEntrega) + (isUrgent ? ' 🔴 URGENTE' : ''), portalCurrentUser || 'Cliente');
     await loadAllData();
     closeModal('novaDemandaModal');
     renderClientPortal();
@@ -5055,7 +5055,7 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 // ═══════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════
-function getClientName(id) { return DB.clients.find(c=>c.id===id)?.nome||'—'; }
+function getClientName(id) { return DB.clients.find(c=>c.id===id)?.nome||' - '; }
 function copyToClipboard(text, msg) {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(text).then(() => showToast(msg||'Copiado!')).catch(() => fallbackCopy(text, msg));
@@ -5108,18 +5108,18 @@ function showToast(msg, isError) {
 }
 
 function formatDate(d) {
-  if(!d) return '—';
+  if(!d) return ' - ';
   const [y,m,day]=d.split('-');
   return `${day}/${m}/${y}`;
 }
 function formatDateLong(d) {
-  if(!d) return '—';
+  if(!d) return ' - ';
   const months=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   const [y,m,day]=d.split('-');
   return `${parseInt(day)} de ${months[parseInt(m)-1]} de ${y}`;
 }
 function formatDateTime(iso) {
-  if(!iso) return '—';
+  if(!iso) return ' - ';
   const d=new Date(iso);
   return `${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
 }
@@ -5282,7 +5282,7 @@ function renderCard(d) {
   const color = getClientColor(d.clienteId);
   const c = getClient(d.clienteId);
   const urgClass = days!==null&&days<=1?'urgent':days!==null&&days<=2?'warning':'';
-  const deadlineLabel = days===null?'—':days<0?`${Math.abs(days)}d atrasado`:days===0?'Hoje':days===1?'Amanhã':`${days}d restantes`;
+  const deadlineLabel = days===null?' - ':days<0?`${Math.abs(days)}d atrasado`:days===0?'Hoje':days===1?'Amanhã':`${days}d restantes`;
   const subAreas = [...new Set((d.subtarefas||[]).filter(s=>s.area).map(s=>s.area))];
   const areaChips = subAreas.map(a=>`<span class="wf-card-chip ${AREA_CLASS[a]||''}" style="font-size:9px;">${AREAS[a]||a}</span>`).join('');
   const draggable = currentUserPerm === 'total' ? 'draggable="true"' : '';
@@ -5315,10 +5315,10 @@ function renderCard(d) {
     </div>
     <div class="wf-progress-bar">
       <div class="wf-progress-track"><div class="wf-progress-fill" style="width:${prog}%"></div></div>
-      <div class="wf-progress-label">${prog}% — ${(d.subtarefas||[]).filter(s=>s.done).length}/${(d.subtarefas||[]).length} subtarefas</div>
+      <div class="wf-progress-label">${prog}%  -  ${(d.subtarefas||[]).filter(s=>s.done).length}/${(d.subtarefas||[]).length} subtarefas</div>
     </div>
     <div class="wf-card-footer">
-      <div class="wf-avatar" title="${d.responsavel||'—'}">${(d.responsavel||'?')[0]}</div>
+      <div class="wf-avatar" title="${d.responsavel||' - '}">${(d.responsavel||'?')[0]}</div>
       <div class="wf-deadline ${urgClass}">${deadlineLabel}</div>
       ${hasClientComments ? '<span title="Há comentários do cliente" style="font-size:12px;margin-left:4px;">💬</span>' : ''}
       ${currentUserPerm==='total' ? '<div style="color:var(--text-muted);font-size:12px;margin-left:4px;" title="Arraste para mover">⠿</div>' : ''}
@@ -5347,7 +5347,7 @@ function renderWfList() {
       </td>
       <td style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;">${c?`<span class="wf-card-client-tag" style="background:${color};">${c.nome}</span>`:'-'}</td>
       <td style="padding:10px 12px;border-bottom:1px solid var(--border);"><span class="wf-card-chip ${AREA_CLASS[d.area]||''}">${AREAS[d.area]||d.area}</span></td>
-      <td style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted);">${d.responsavel||'—'}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text-muted);">${d.responsavel||' - '}</td>
       <td style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;" class="${urgClass}">${formatDate(d.dataEntrega)}</td>
       <td style="padding:10px 12px;border-bottom:1px solid var(--border);"><span class="badge-tipo" style="font-size:11px;">${colLabel}</span></td>
       <td style="padding:10px 12px;border-bottom:1px solid var(--border);min-width:120px;">
@@ -5419,12 +5419,12 @@ function openWfPanel(id) {
   const subAreas = [...new Set((d.subtarefas||[]).filter(s=>s.area).map(s=>AREAS[s.area]||s.area))];
 
   document.getElementById('wfDpTitle').textContent = d.nome;
-  document.getElementById('wfDpMeta').innerHTML = `${c?`<span style="color:${c.cor||'var(--accent)'};font-weight:700;">${c.nome}</span> · `:''}${subAreas.length?subAreas.join(', '):'—'} · ${d.responsavel||'—'}${urgLabel}`;
+  document.getElementById('wfDpMeta').innerHTML = `${c?`<span style="color:${c.cor||'var(--accent)'};font-weight:700;">${c.nome}</span> · `:''}${subAreas.length?subAreas.join(', '):' - '} · ${d.responsavel||' - '}${urgLabel}`;
 
   const prog = getWfProgress(d);
   document.getElementById('wfDpProgress').textContent = prog+'%';
   document.getElementById('wfDpProgressBar').style.width = prog+'%';
-  document.getElementById('wfDpObs').textContent = d.obs||'—';
+  document.getElementById('wfDpObs').textContent = d.obs||' - ';
 
   // Show client comments if any
   const wfClientCommentsEl = document.getElementById('wfClientComments');
@@ -5442,7 +5442,7 @@ function openWfPanel(id) {
     }
   }
 
-  // Status — editable only for total permission
+  // Status  -  editable only for total permission
   const colColors = {espera:'#4a5a72',producao:'var(--blue)',aprovacao:'var(--orange)',cliente:'var(--green)'};
   const colLabels = {espera:'Em espera',producao:'Em produção',aprovacao:'Aprovação interna',cliente:'Com o cliente'};
   const statusWrap = document.getElementById('wfDpStatusWrap');
@@ -5642,12 +5642,12 @@ function renderSubtasks(d) {
 
       ${isEdicao?`<div style="margin-bottom:10px;">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
-          <div class="form-group"><label class="form-label">Tempo do vídeo — min</label>
+          <div class="form-group"><label class="form-label">Tempo do vídeo  -  min</label>
             <input class="form-input" type="number" min="0" placeholder="0"
               value="${s.edicao?.minutos||0}" ${!isTotal||s.done?'readonly':''}
               oninput="updateStEdicao('${s.id}','minutos',parseInt(this.value)||0)">
           </div>
-          <div class="form-group"><label class="form-label">Tempo do vídeo — seg</label>
+          <div class="form-group"><label class="form-label">Tempo do vídeo  -  seg</label>
             <input class="form-input" type="number" min="0" max="59" placeholder="0"
               value="${s.edicao?.segundos||0}" ${!isTotal||s.done?'readonly':''}
               oninput="updateStEdicao('${s.id}','segundos',parseInt(this.value)||0)">
@@ -5851,7 +5851,7 @@ async function toggleSubtask(sid) {
   } else if (s.running) {
     const elapsed = Math.floor((Date.now()-s.startedAt)/1000);
     s.tempo += elapsed; s.running = false; s.done = true; s.startedAt = null; s.bloqueado = false;
-    await logHistory('Subtarefa concluída', getClientName(d.clienteId), `"${s.nome}" — Tempo: ${fmtTime(s.tempo)}`);
+    await logHistory('Subtarefa concluída', getClientName(d.clienteId), `"${s.nome}"  -  Tempo: ${fmtTime(s.tempo)}`);
     await checkAllSubtasksDone(d);
   } else {
     d.subtarefas.forEach(x=>{ if(x.running){ x.tempo+=Math.floor((Date.now()-x.startedAt)/1000); x.running=false; x.startedAt=null; }});
@@ -6205,7 +6205,7 @@ function showWfPopup(d) {
   const popup = document.getElementById('wfPopup');
   const c = getClient(d.clienteId);
   document.getElementById('wfPopupTitle').textContent = '✅ Todas as subtarefas concluídas!';
-  document.getElementById('wfPopupBody').innerHTML = `<strong>${d.nome}</strong><br>Cliente: ${c?c.nome:'—'}<br>Movido para Aprovação interna.`;
+  document.getElementById('wfPopupBody').innerHTML = `<strong>${d.nome}</strong><br>Cliente: ${c?c.nome:' - '}<br>Movido para Aprovação interna.`;
   popup.classList.add('show');
   setTimeout(()=>popup.classList.remove('show'), 4000);
 }
@@ -6352,18 +6352,18 @@ function renderProfessionalDashboard() {
 
   const getAreas = d => {
     const areas=[...new Set((d.subtarefas||[]).filter(s=>s.area).map(s=>AREAS[s.area]||s.area))];
-    return areas.length ? areas.join(', ') : '—';
+    return areas.length ? areas.join(', ') : ' - ';
   };
 
   const renderProItems = (items, dotColor) => items.length ? items.map(d=>{
     const c = DB.clients.find(x=>x.id===d.clienteId);
     const respSet = [...new Set((d.subtarefas||[]).filter(s=>s.colaborador).map(s=>s.colaborador))];
-    const respLabel = respSet.length ? respSet.join(', ') : (d.responsavel||'—');
+    const respLabel = respSet.length ? respSet.join(', ') : (d.responsavel||' - ');
     return `<div class="dash-pro-item" onclick="openWfPanel('${d.id}')">
       <div class="dash-pro-item-dot" style="background:${dotColor};"></div>
       <div style="flex:1;min-width:0;">
         <div class="dash-pro-item-title">${d.nome}</div>
-        <div class="dash-pro-item-client">${c?`<span style="color:${c.cor||'var(--accent)'};">${c.nome}</span>`:'—'} · ${getAreas(d)}</div>
+        <div class="dash-pro-item-client">${c?`<span style="color:${c.cor||'var(--accent)'};">${c.nome}</span>`:' - '} · ${getAreas(d)}</div>
         <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">👤 ${respLabel} · 📅 ${formatDate(d.dataEntrega)}</div>
       </div>
     </div>`;
@@ -6441,7 +6441,7 @@ function renderProfessionalDashboard() {
         <div class="inbox-item-info">
           <div class="inbox-item-nome">${d.nome}</div>
           <div class="inbox-item-meta">
-            <span style="color:var(--accent);">${c?c.nome:'—'}</span>
+            <span style="color:var(--accent);">${c?c.nome:' - '}</span>
             ${d.dataEntrega ? ` · 📅 Prazo sugerido: ${formatDate(d.dataEntrega)}` : ''}
           </div>
         </div>
@@ -6865,11 +6865,11 @@ function exportAnalyticsCSV(type) {
     if (isColab && uid) {
       (d.subtarefas||[]).filter(s=>s.colaborador===u?.nome).forEach(s=>{
         const c = DB.clients.find(x=>x.id===d.clienteId);
-        rows.push([s.tipoDesign||'—', d.nome, c?.nome||'—', s.colaborador, d.dataEntrega, d.status, s.artboards||1, fmtTime(s.tempo||0)]);
+        rows.push([s.tipoDesign||' - ', d.nome, c?.nome||' - ', s.colaborador, d.dataEntrega, d.status, s.artboards||1, fmtTime(s.tempo||0)]);
       });
     } else if (!isColab && cid && String(d.clienteId)===String(cid)) {
       const c = DB.clients.find(x=>x.id===d.clienteId);
-      rows.push(['demanda', d.nome, c?.nome||'—', d.responsavel, d.dataEntrega, d.status, '—', '—']);
+      rows.push(['demanda', d.nome, c?.nome||' - ', d.responsavel, d.dataEntrega, d.status, ' - ', ' - ']);
     }
   });
 
@@ -6916,7 +6916,7 @@ function populateFilterClientes() {
 }
 
 // ═══════════════════════════════════════
-// URL PARAM HANDLER — auto-open portal from shared link
+// URL PARAM HANDLER  -  auto-open portal from shared link
 // ═══════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   // Apply permanent logo immediately on page load
@@ -6946,7 +6946,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backBtn) backBtn.style.display = 'none';
     loadAllData().then(() => {
       const c = DB.clients.find(x => x.id === portalClientId);
-      if (c) document.title = c.nome + ' — Área do Cliente';
+      if (c) document.title = c.nome + '  -  Área do Cliente';
       renderClientPortal();
       document.getElementById('portalPage').classList.add('show');
     });
