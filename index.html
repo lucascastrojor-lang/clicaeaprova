@@ -4641,7 +4641,7 @@ function renderClientCard(d) {
 
   const extraClass = (isCancelRequest ? ' red-cancel' : isNewAttach ? ' purple' : '');
 
-  return '<div class="client-card' + extraClass + '" onclick="openClientDemandPanel("' + d.id + '")">' +
+  return '<div class="client-card' + extraClass + '" onclick="openClientDemandPanel(\' + d.id + '\')>' +
     '<div class="client-card-title">' + d.nome + '</div>' +
     '<div class="client-card-meta">📅 Prazo: ' + formatDate(d.dataEntrega) + (d.tipo ? ' · ' + (d.tipo === 'digital' ? '💻 Digital' : '🖨️ Impresso') : '') + '</div>' +
     '<div class="client-card-chips">' +
@@ -4727,7 +4727,7 @@ function openClientDemandPanel(demandId) {
     contentHTML += '<div class="detail-field" style="margin-bottom:14px;"><div class="detail-field-label">📎 Materiais para Aprovação</div>';
     if (allFiles.length > 0) {
       contentHTML += '<div class="client-attach-grid">' +
-        allFiles.map(f => '<div class="client-attach-thumb" onclick="openLightbox("' + f.url + '")">' +
+        allFiles.map(f => '<div class="client-attach-thumb" onclick="openLightbox(\' + f.url + '\')>' +
           (f.url.match(/\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image') ? '<img src="' + f.url + '">' : '📄') +
         '</div>').join('') +
       '</div>';
