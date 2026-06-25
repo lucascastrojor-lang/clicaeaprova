@@ -5021,8 +5021,8 @@ async function addClientLink() {
   }
   const d = wfDemands.find(x => String(x.id) === String(currentClientDemandId));
   if (!d) return;
-  const clientLinks = d.clientL  clientLinks.push(link);.push(link);
-  d.links = links;
+    const clientLinks = d.clientLinks || [];
+      clientLinks.push(link);
   d.novosAnexos = true;
   await sbUpdate('workflow_demandas', d.id, { client_links: clientLinks, novos_anexos: true });
   await logHistory('Link adicionado pelo cliente', getClientName(d.clienteId), 'Link adicionado: ' + link, portalCurrentUser || 'Cliente');
