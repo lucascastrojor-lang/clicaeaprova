@@ -1420,6 +1420,52 @@
   .client-card-progress-label { font-size:10px; color:var(--text-muted); margin-top:3px; }
   .client-card-delivery { font-size:10px; color:var(--accent); font-weight:600; margin-top:6px; }
 
+  /* Portal Tabs (Kanban | Calendário) */
+  .portal-tabs { display:flex; gap:6px; margin-bottom:14px; }
+  .portal-tab {
+    padding:7px 18px; border-radius:6px; border:1px solid var(--border);
+    background:var(--bg-input); color:var(--text-secondary); cursor:pointer;
+    font-size:13px; font-weight:600; transition:all .15s;
+  }
+  .portal-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .portal-tab:hover:not(.active) { border-color:var(--accent); color:var(--text-primary); }
+
+  /* Client Calendar View */
+  .client-calendar-view { width:100%; }
+  .cal-month-header { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .cal-month-nav { background:var(--bg-input); border:1px solid var(--border); color:var(--text-primary); padding:5px 12px; border-radius:6px; cursor:pointer; font-size:15px; }
+  .cal-month-label { font-size:16px; font-weight:700; color:var(--text-primary); }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-day-name { text-align:center; font-size:11px; font-weight:700; color:var(--text-muted); padding:6px 0; }
+  .cal-day {
+    min-height:80px; background:var(--bg-card); border:1px solid var(--border);
+    border-radius:6px; padding:5px; position:relative;
+  }
+  .cal-day.other-month { opacity:.4; }
+  .cal-day.today { border-color:var(--accent); }
+  .cal-day-num { font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:4px; }
+  .cal-day.today .cal-day-num { color:var(--accent); }
+  .cal-event {
+    font-size:10px; padding:2px 5px; border-radius:3px; margin-bottom:2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;
+  }
+  .cal-event.entrega { background:rgba(61,220,132,.15); color:var(--accent); border-left:2px solid var(--accent); }
+  .cal-event.aprovacao { background:rgba(249,115,22,.15); color:var(--orange); border-left:2px solid var(--orange); }
+  .cal-event.publicacao { background:rgba(59,130,246,.15); color:var(--blue); border-left:2px solid var(--blue); }
+
+  /* Inbox item red highlight */
+  .inbox-item.unprocessed { border-left:3px solid var(--red) !important; background:rgba(239,68,68,.07) !important; }
+  .inbox-item.unprocessed .inbox-item-nome { color:var(--red) !important; }
+
+  /* Attachment replace section (post-creation) */
+  .attach-replace-section { margin:14px 0; padding:12px; background:var(--bg-input); border-radius:8px; border:1px solid var(--border); }
+  .attach-replace-title { font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:8px; }
+  .attach-replace-list { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  .attach-replace-thumb { width:60px; height:60px; border-radius:6px; border:1px solid var(--border); overflow:hidden; cursor:pointer; }
+  .attach-replace-thumb img { width:100%; height:100%; object-fit:cover; }
+  .attach-replace-link { font-size:11px; color:var(--accent); text-decoration:none; }
+  .attach-replace-link:hover { text-decoration:underline; }
+
   /* Demand detail panel for client */
   .client-detail-panel {
     position:fixed; right:0; top:0; bottom:0; width:560px;
@@ -1575,8 +1621,19 @@
       </button>
     </div>
 
+    <!-- Portal Tabs: Kanban | Calendário -->
+    <div class="portal-tabs" id="portalTabs">
+      <button class="portal-tab active" id="tabKanban" onclick="switchPortalTab('kanban')">📋 Kanban</button>
+      <button class="portal-tab" id="tabCalendario" onclick="switchPortalTab('calendario')">📅 Calendário</button>
+    </div>
+
     <!-- Client Kanban -->
     <div class="client-kanban" id="clientKanban">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- Client Calendar -->
+    <div class="client-calendar-view" id="clientCalendarView" style="display:none;">
       <!-- rendered by JS -->
     </div>
 
@@ -4598,6 +4655,115 @@ function renderClientPortal() {
 
   // Render kanban
   renderClientKanban(demands);
+  // Refresh calendar if it's currently active
+  const calViewEl = document.getElementById('clientCalendarView');
+  if (calViewEl && calViewEl.style.display !== 'none') {
+    renderClientCalendar();
+  }
+}
+
+// ── Portal Tab Switching ──────────────────────────────────────────────────────
+function switchPortalTab(tab) {
+  const kanbanEl = document.getElementById('clientKanban');
+  const calEl = document.getElementById('clientCalendarView');
+  const tabK = document.getElementById('tabKanban');
+  const tabC = document.getElementById('tabCalendario');
+  if (tab === 'kanban') {
+    if (kanbanEl) kanbanEl.style.display = '';
+    if (calEl) calEl.style.display = 'none';
+    if (tabK) tabK.classList.add('active');
+    if (tabC) tabC.classList.remove('active');
+  } else {
+    if (kanbanEl) kanbanEl.style.display = 'none';
+    if (calEl) calEl.style.display = '';
+    if (tabK) tabK.classList.remove('active');
+    if (tabC) tabC.classList.add('active');
+    renderClientCalendar();
+  }
+}
+
+// ── Client Calendar ───────────────────────────────────────────────────────────
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+function renderClientCalendar() {
+  const calEl = document.getElementById('clientCalendarView');
+  if (!calEl) return;
+  if (!portalClientId) return;
+
+  const demands = wfDemands.filter(d => d.clienteId === portalClientId);
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth + 1, 0);
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  // Build events map: key = 'YYYY-MM-DD' -> array of events
+  const eventsMap = {};
+  const addEvent = (dateStr, label, type) => {
+    if (!dateStr) return;
+    const key = dateStr.slice(0, 10);
+    if (!eventsMap[key]) eventsMap[key] = [];
+    eventsMap[key].push({ label, type });
+  };
+
+  demands.forEach(d => {
+    if (d.dataEntrega) addEvent(d.dataEntrega, '📅 Entrega: ' + d.nome, 'entrega');
+    const cs = WF_TO_CLIENT_STATUS[d.status] || d.status;
+    if (cs === 'emaprovacao') addEvent(d.dataEntrega || d.dataEntrada, '⏳ Aprovação: ' + d.nome, 'aprovacao');
+    (d.subtarefas || []).forEach(s => {
+      if (s.dataEntrega) addEvent(s.dataEntrega, '📌 ' + s.nome, 'publicacao');
+    });
+  });
+
+  // Grid: start from Sunday of first week
+  const startDow = firstDay.getDay(); // 0=Sun
+  const cells = [];
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(calYear, calMonth, -startDow + i + 1);
+    cells.push({ date: d, inMonth: false });
+  }
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    cells.push({ date: new Date(calYear, calMonth, d), inMonth: true });
+  }
+  const remaining = 42 - cells.length;
+  for (let d = 1; d <= remaining; d++) {
+    cells.push({ date: new Date(calYear, calMonth + 1, d), inMonth: false });
+  }
+
+  const dayNames = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const dayHeaders = dayNames.map(n => '<div class="cal-day-name">' + n + '</div>').join('');
+
+  const dayCells = cells.map(cell => {
+    const y = cell.date.getFullYear();
+    const m = String(cell.date.getMonth() + 1).padStart(2,'0');
+    const dd = String(cell.date.getDate()).padStart(2,'0');
+    const key = y + '-' + m + '-' + dd;
+    const isToday = cell.date.toDateString() === today.toDateString();
+    const evs = (eventsMap[key] || []).slice(0, 3);
+    const evHtml = evs.map(e => '<div class="cal-event ' + e.type + '" title="' + e.label + '">' + e.label + '</div>').join('');
+    return '<div class="cal-day' + (!cell.inMonth ? ' other-month' : '') + (isToday ? ' today' : '') + '">' +
+      '<div class="cal-day-num">' + cell.date.getDate() + '</div>' +
+      evHtml +
+    '</div>';
+  }).join('');
+
+  calEl.innerHTML = '<div class="cal-month-header">' +
+    '<button class="cal-month-nav" onclick="calPrev()">‹</button>' +
+    '<span class="cal-month-label">' + monthNames[calMonth] + ' ' + calYear + '</span>' +
+    '<button class="cal-month-nav" onclick="calNext()">›</button>' +
+  '</div>' +
+  '<div class="cal-grid">' + dayHeaders + dayCells + '</div>';
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderClientCalendar();
+}
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderClientCalendar();
 }
 
 function renderClientKanban(demands) {
@@ -4740,6 +4906,35 @@ function openClientDemandPanel(demandId) {
     contentHTML += '</div>';
   }
 
+
+  // Attachment replace/add section (client can add/replace files after creation)
+  if (clientStatus !== 'finalizado') {
+    const existingFiles = d.clientAttachments || [];
+    const existingLinks = d.clientLinks || [];
+    contentHTML += '<div class="attach-replace-section">' +
+      '<div class="attach-replace-title">📎 Seus Arquivos e Links</div>' +
+      (existingFiles.length > 0 ? '<div class="attach-replace-list">' +
+        existingFiles.map(f => {
+          const isImg = f.url && (f.url.match(/\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
+          return '<div class="attach-replace-thumb" onclick="openLightbox('' + f.url + '')">' +
+            (isImg ? '<img src="' + f.url + '">' : '📄 ' + (f.nome || 'Arquivo')) +
+          '</div>';
+        }).join('') +
+      '</div>' : '') +
+      (existingLinks.length > 0 ? existingLinks.map(lk => '<a href="' + lk + '" target="_blank" rel="noopener" class="attach-replace-link">🔗 ' + lk + '</a>').join('<br>') : '') +
+      '<div style="margin-top:8px;">' +
+        '<label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:4px;">Adicionar/Substituir arquivo (máx 10 MB)</label>' +
+        '<input type="file" id="cdpReplaceFile" accept="image/*,.pdf" style="font-size:11px;" onchange="handleClientAttachReplace(this)">' +
+      '</div>' +
+      '<div style="margin-top:8px;">' +
+        '<label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:4px;">Adicionar link de referência</label>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<input type="text" id="cdpReplaceLink" placeholder="https://..." style="flex:1;padding:5px 8px;background:var(--bg-card2);border:1px solid var(--border);border-radius:5px;color:var(--text-primary);font-size:11px;">' +
+          '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="addClientLink()">+ Adicionar</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
   // Approval buttons (only when status = emaprovacao)
   if (clientStatus === 'emaprovacao') {
     contentHTML += '<div class="approval-btns">' +
@@ -4785,6 +4980,55 @@ function closeClientPanel() {
   document.getElementById('clientPanelOverlay').classList.remove('open');
   document.getElementById('clientDetailPanel').classList.remove('open');
   currentClientDemandId = null;
+}
+
+// ── Attachment Replace/Add (post-creation by client) ─────────────────────────
+async function handleClientAttachReplace(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('⚠️ O arquivo excede o limite de 10 MB. Faça o upload no WeTransfer e cole o link no campo de referência.', true);
+    input.value = '';
+    return;
+  }
+  const d = wfDemands.find(x => String(x.id) === String(currentClientDemandId));
+  if (!d) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const url = e.target.result;
+    const clientAttachments = d.clientAttachments || [];
+    d.arquivos = arquivos;
+    d.clientAttachments = clientAttachments;
+    d.novosAnexos = true; // purple card flag
+    await sbUpdate('workflow_demandas', d.id, { client_attachments: clientAttachments, novos_anexos: true });
+    await logHistory('Arquivos atualizados pelo cliente', getClientName(d.clienteId), 'Arquivo adicionado/substituído: ' + file.name, portalCurrentUser || 'Cliente');
+    await loadAllData();
+    showToast('📎 Arquivo adicionado! A equipe foi notificada.');
+    openClientDemandPanel(d.id);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addClientLink() {
+  const input = document.getElementById('cdpReplaceLink');
+  if (!input) return;
+  const link = input.value.trim();
+  if (!link) return;
+  if (!link.startsWith('http')) {
+    showToast('⚠️ Por favor, insira um link válido começando com http(s)://', true);
+    return;
+  }
+  const d = wfDemands.find(x => String(x.id) === String(currentClientDemandId));
+  if (!d) return;
+  const clientLinks = d.clientL  clientLinks.push(link);.push(link);
+  d.links = links;
+  d.novosAnexos = true;
+  await sbUpdate('workflow_demandas', d.id, { client_links: clientLinks, novos_anexos: true });
+  await logHistory('Link adicionado pelo cliente', getClientName(d.clienteId), 'Link adicionado: ' + link, portalCurrentUser || 'Cliente');
+  await loadAllData();
+  showToast('🔗 Link adicionado! A equipe foi notificada.');
+  openClientDemandPanel(d.id);
 }
 
 async function clientApprove() {
@@ -5141,10 +5385,14 @@ function socialIconsHtml(redes) {
 
 const AREAS = { design:'Design Gráfico', social:'Social Media', av:'Audiovisual', captacao:'Captação de Vídeo', edicao:'Edição de Vídeo', atend:'Atendimento' };
 const WF_COLS = [
-  {id:'espera',   label:'Em espera',         color:'#4a5a72'},
-  {id:'producao', label:'Em produção',        color:'#3b82f6'},
-  {id:'aprovacao',label:'Aprovação interna',  color:'#f97316'},
-  {id:'cliente',  label:'Com o cliente',      color:'#3ddc84'},
+  {id:'espera',    label:'Em Espera',         color:'#4a5a72'},
+  {id:'producao',  label:'Produção',           color:'#3b82f6'},
+  {id:'revisao',   label:'Revisão',            color:'#8b5cf6'},
+  {id:'aprovacao', label:'Aprovação Interna',  color:'#f97316'},
+  {id:'cliente',   label:'Com o Cliente',      color:'#3ddc84'},
+  {id:'reprovado', label:'Reprovado',          color:'#ef4444'},
+  {id:'aprovado',  label:'Aprovado',           color:'#22c55e'},
+  {id:'finalizado',label:'Finalizado',         color:'#6b7280'},
 ];
 const AREA_CLASS = { design:'area-design', social:'area-social', av:'area-av', atend:'area-atend' };
 
@@ -5413,6 +5661,11 @@ function openWfPanel(id) {
   const d = wfDemands.find(x=>x.id===id);
   if (!d) { console.warn('Demanda não encontrada:', id); return; }
   currentWfDemandId = id;
+  // Clear purple (novosAnexos) when WF team opens the card
+  if (d.novosAnexos) {
+    d.novosAnexos = false;
+    sbUpdate('workflow_demandas', d.id, { novos_anexos: false }).catch(()=>{});
+  }
   const c = getClient(d.clienteId);
   const days = getDaysLeft(d.dataEntrega);
   const urgLabel = days!==null&&days<=1?' 🔴 Urgente':days!==null&&days<=2?' ⚠️ Atenção':'';
@@ -5448,11 +5701,15 @@ function openWfPanel(id) {
   const statusWrap = document.getElementById('wfDpStatusWrap');
   if (statusWrap) {
     if (currentUserPerm === 'total') {
-      statusWrap.innerHTML = `<select class="status-select" id="wfDpStatus" style="font-size:11px;" onchange="wfChangeStatus(this.value)">
-        <option value="espera" ${d.status==='espera'?'selected':''}>Em espera</option>
-        <option value="producao" ${d.status==='producao'?'selected':''}>Em produção</option>
-        <option value="aprovacao" ${d.status==='aprovacao'?'selected':''}>Aprovação interna</option>
-        <option value="cliente" ${d.status==='cliente'?'selected':''}>Com o cliente</option>
+      statusWrap.innerHTML = `<select onchange="setWfStatus('${d.id}',this.value)" style="background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:12px;">
+        <option value="espera" ${d.status==='espera'?'selected':''}>Em Espera</option>
+        <option value="producao" ${d.status==='producao'?'selected':''}>Produção</option>
+        <option value="revisao" ${d.status==='revisao'?'selected':''}>Revisão</option>
+        <option value="aprovacao" ${d.status==='aprovacao'?'selected':''}>Aprovação Interna</option>
+        <option value="cliente" ${d.status==='cliente'?'selected':''}>Com o Cliente</option>
+        <option value="reprovado" ${d.status==='reprovado'?'selected':''}>Reprovado</option>
+        <option value="aprovado" ${d.status==='aprovado'?'selected':''}>Aprovado</option>
+        <option value="finalizado" ${d.status==='finalizado'?'selected':''}>Finalizado</option>
       </select>`;
     } else {
       statusWrap.innerHTML = `<span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(0,0,0,.3);color:${colColors[d.status]||'var(--text-muted)'};">${colLabels[d.status]||d.status}</span>`;
@@ -6437,7 +6694,8 @@ function renderProfessionalDashboard() {
     <div class="inbox-title">📥 Solicitação de Novas Demandas <span style="font-size:11px;font-weight:400;color:var(--text-muted);">(enviadas pelos clientes via portal)</span></div>
     ${inboxDemands.length ? inboxDemands.map(d=>{
       const c = DB.clients.find(x=>x.id===d.clienteId);
-      return `<div class="inbox-item">
+      const isUnprocessed = d.status === 'solicitado_cliente';
+      return `<div class="inbox-item${isUnprocessed ? ' unprocessed' : ''}">
         <div class="inbox-item-info">
           <div class="inbox-item-nome">${d.nome}</div>
           <div class="inbox-item-meta">
