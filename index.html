@@ -4998,7 +4998,7 @@ async function handleClientAttachReplace(input) {
   reader.onload = async (e) => {
     const url = e.target.result;
     const clientAttachments = d.clientAttachments || [];
-    d.arquivos = arquivos;
+        clientAttachments.push({ url, nome: file.name });
     d.clientAttachments = clientAttachments;
     d.novosAnexos = true; // purple card flag
     await sbUpdate('workflow_demandas', d.id, { client_attachments: clientAttachments, novos_anexos: true });
