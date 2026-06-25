@@ -3966,7 +3966,7 @@ function renderDashboard() {
 
   // Pending
   const pendPosts = DB.posts.filter(p=>p.status==='pendente').slice(0,5);
-const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) dpEl.innerHTML = pendPosts.length ?
+const dpEl =   document.getElementById('dashPendingList'); if(dpEl) dpEl.innerHTML = pendPosts.length ?
     pendPosts.map(p=>{
       const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||' - ';
       return `<div class="pending-item">
@@ -3986,7 +3986,7 @@ const _dpEl =   document.getElementById('dashPendingList'); if(_dpEl) dpEl.inner
     const pd=new Date(y,m-1,d);
     return pd>=now&&pd<=in7&&p.status!=='reprovado'&&p.status!=='finalizado';
   });
-const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) dn7El.innerHTML = next7.length ?
+const dn7El =   document.getElementById('dashNext7'); if(dn7El) dn7El.innerHTML = next7.length ?
     next7.map(p=>{
       const resp = (p.subtarefas||[]).flatMap(s=>s.colaborador?[s.colaborador]:[]).filter((v,i,a)=>a.indexOf(v)===i).join(', ')||' - ';
       return `<div class="pending-item" style="border-left-color:var(--blue);">
@@ -4000,7 +4000,7 @@ const _dn7El =   document.getElementById('dashNext7'); if(_dn7El) dn7El.innerHTM
 
   // Recent
   const recent = [...DB.posts].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4);
-const _drpEl =   document.getElementById('dashRecentPosts'); if(_drpEl) drpEl.innerHTML = recent.map(p=>`
+const drpEl =   document.getElementById('dashRecentPosts'); if(drpEl) drpEl.innerHTML = recent.map(p=>`
     <div class="recent-item">
       <div class="recent-thumb">${getThumb(p)?`<img src="${getThumb(p)}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`:'🖼️'}</div>
       <div class="recent-info">
