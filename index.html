@@ -4916,7 +4916,7 @@ function openClientDemandPanel(demandId) {
       (existingFiles.length > 0 ? '<div class="attach-replace-list">' +
         existingFiles.map(f => {
           const isImg = f.url && (f.url.match(/\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
-          return '<div class="attach-replace-thumb" onclick="openLightbox('' + f.url + '')">' +
+                    return '<div class="attach-replace-thumb" onclick="openLightbox(\'' + f.url + '\')">' +
             (isImg ? '<img src="' + f.url + '">' : '📄 ' + (f.nome || 'Arquivo')) +
           '</div>';
         }).join('') +
@@ -7198,16 +7198,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const postId   = params.get('postId');
 
   if (isPortal) {
-    document.getElementById('loginPage').classList.remove('show');
-    portalClientId = clientId || null;
-    const backBtn = document.getElementById('portalBackBtn');
-    if (backBtn) backBtn.style.display = 'none';
-    loadAllData().then(() => {
-      const c = DB.clients.find(x => x.id === portalClientId);
-      if (c) document.title = c.nome + '  -  Área do Cliente';
-      renderClientPortal();
-      document.getElementById('portalPage').classList.add('show');
-    });
+          document.getElementById('loginPage').classList.remove('show');
+          document.getElementById('portalPage').classList.add('show');
+          portalClientId = clientId || null;
+          const backBtn = document.getElementById('portalBackBtn');
+          if (backBtn) backBtn.style.display = 'none';
+          loadAllData().then(() => {
+                    const c = DB.clients.find(x => x.id === portalClientId);
+                    if (c) document.title = c.nome + '  -  Área do Cliente';
+                    renderClientPortal();
+          }).catch(() => {
+                    renderClientPortal();
+          });
   }
 });;
 // ── LIGHTBOX ──
