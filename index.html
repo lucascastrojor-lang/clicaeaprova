@@ -4641,7 +4641,7 @@ function renderClientCard(d) {
 
   const extraClass = (isCancelRequest ? ' red-cancel' : isNewAttach ? ' purple' : '');
 
-  return '<div class="client-card' + extraClass + '" onclick="openClientDemandPanel(\' + d.id + '\')>' +
+  return '<div class="client-card' + extraClass + '" data-id="' + d.id + '" onclick="openClientDemandPanel(this.getAttribute(\'data-id\'))">' +
     '<div class="client-card-title">' + d.nome + '</div>' +
     '<div class="client-card-meta">📅 Prazo: ' + formatDate(d.dataEntrega) + (d.tipo ? ' · ' + (d.tipo === 'digital' ? '💻 Digital' : '🖨️ Impresso') : '') + '</div>' +
     '<div class="client-card-chips">' +
