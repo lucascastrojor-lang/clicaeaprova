@@ -7,7 +7,7 @@
 <meta name="cf-2fa-verify" content="skip">
 <title>Painel de Aprovações</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;1,6..12,300&display=swap');
+  @import url('https://fonts.googleapis.com/cshs2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;1,6..12,300&display=swap');
 
   :root {
     --bg-base: #0a0e1a;
@@ -5251,9 +5251,7 @@ async function salvarNovaDemanda() {
     client_attachments: uploadedFiles,
     client_links: ndLinks,
     client_comments: [],
-    cancel_request: false,
   };
-
   try {
     await sbInsert('workflow_demandas', sbData);
     await logHistory('Nova demanda solicitada pelo cliente', getClientName(portalClientId),
