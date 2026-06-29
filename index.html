@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Disable Cloudflare email obfuscation that breaks click events -->
-<meta name="cf-2fa-verify" content="skip">
+<meta name="cf-2fa-verify" content="skip">h
 <title>Painel de Aprovações</title>
-<style>
+<style>h
   @import url('https://fonts.googleapis.com/cshs2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;1,6..12,300&display=swap');
 
   :root {
@@ -5241,7 +5241,7 @@ async function salvarNovaDemanda() {
     responsavel: '',
     data_entrega: dataEntrega,
     data_entrada: new Date().toISOString().split('T')[0],
-    status: 'solicitado_cliente',
+    status: 'espera',
     obs: comentario || '',
     version: 1,
     is_alteracao: false,
@@ -5254,6 +5254,8 @@ async function salvarNovaDemanda() {
     await loadAllData();
     closeModal('novaDemandaModal');
     renderClientPortal();
+    renderProfessionalDashboard();
+    renderWorkflow();
     showToast('✅ Sua solicitação foi enviada com sucesso!');
   } catch(e) {
     hideLoading();
