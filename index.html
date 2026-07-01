@@ -2220,6 +2220,7 @@
       <div style="font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:6px;">Observações</div>
       <div style="font-size:13px;color:var(--text-secondary);" id="wfDpObs">—</div>
     </div>
+    <div id="wfClientAttachments" style="margin-top:12px;display:none;padding:10px 0;border-top:1px solid var(--border);"></div>
     <div id="wfClientComments" style="margin-top:12px;display:none;"></div>
   </div>
   <div class="wf-detail-footer">
@@ -5675,6 +5676,33 @@ function openWfPanel(id) {
   document.getElementById('wfDpProgressBar').style.width = prog+'%';
   document.getElementById('wfDpObs').textContent = d.obs||' - ';
 
+  // Show client attachments if any
+  const wfClientAttachEl = document.getElementById('wfClientAttachments');
+  if (wfClientAttachEl) {
+    const ca = d.clientAttachments || [];
+    const cl = d.clientLinks || [];
+    if (ca.length > 0 || cl.length > 0) {
+      let aHtml = '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">📎 Anexos do Cliente</div>';
+      if (ca.length > 0) {
+        aHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">';
+        ca.forEach(f => {
+          const isImg = f.url && (f.url.match(/\\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
+          aHtml += '<div onclick="openLightbox(\\'' + f.url + '\\')" style="cursor:pointer;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:6px;" title="' + (f.nome||'Arquivo') + '">' +
+            (isImg ? '<img src="' + f.url + '" style="width:36px;height:36px;object-fit:cover;border-radius:3px;">' : '📄 ' + (f.nome||'Arquivo')) +
+            '</div>';
+        });
+        aHtml += '</div>';
+      }
+      if (cl.length > 0) {
+        aHtml += cl.map(lk => '<a href="' + lk + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--blue);margin-right:8px;">🔗 ' + lk + '</a>').join('');
+      }
+      wfClientAttachEl.innerHTML = aHtml;
+      wfClientAttachEl.style.display = 'block';
+    } else {
+      wfClientAttachEl.style.display = 'none';
+    }
+  }
+
   // Show client comments if any
   const wfClientCommentsEl = document.getElementById('wfClientComments');
   if (wfClientCommentsEl) {
@@ -5827,6 +5855,20 @@ function renderSubtasks(d) {
             <option value="">Selecione...</option>
             ${uList}
           </select>
+        </div>
+      </div>
+
+      <!-- DELIVERY DATE FIELDS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div class="form-group">
+          <label class="form-label">📅 Data de entrega</label>
+          <input class="form-input" type="date" value="${s.dataEntrega||''}" ${!isTotal||s.done?'readonly':''}
+            oninput="updateStField('${s.id}','dataEntrega',this.value)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">🗓️ Previsão de entrega</label>
+          <input class="form-input" type="date" value="${s.dataEntregaPrevista||''}" ${!isTotal||s.done?'readonly':''}
+            oninput="updateStField('${s.id}','dataEntregaPrevista',this.value)">
         </div>
       </div>
 
@@ -6228,10 +6270,14 @@ function updateStField(sid, field, val) {
 async function saveSubtask(sid) {
   const d = wfDemands.find(x=>x.id===currentWfDemandId);
   if(!d) return;
+  const s = d.subtarefas.find(x=>x.id===sid);
+  if(!s) { showToast('Subtarefa não encontrada.', true); return; }
+  // Capture nome field (onchange may not have fired yet)
+  const nomeEl = document.querySelector('#stItem-'+sid+' .subtask-title');
+  if(nomeEl && nomeEl.value) s.nome = nomeEl.value;
   // Capture any pending briefing editor content
   const briefingEl = document.getElementById('briefing-'+sid);
-  const s = d.subtarefas.find(x=>x.id===sid);
-  if(s && briefingEl) s.briefing = briefingEl.innerHTML;
+  if(briefingEl) s.briefing = briefingEl.innerHTML;
   clearTimeout(window._briefingDebounce);
 
   // Upload any base64 approval images to Cloudinary
@@ -6842,11 +6888,15 @@ function renderAnalyticsColab() {
   const digital = mySubtasks.filter(s => s.tipoDesign === 'digital').length;
   const impressao = mySubtasks.filter(s => s.tipoDesign === 'impressao').length;
 
-  // Demands entregues fora do prazo
+  // Demands entregues fora do prazo (usa dataEntrega da subtarefa se disponivel)
   const atrasadas = filteredDemands.filter(d => {
-    if (!d.dataEntrega || d.status !== 'cliente') return false;
-    const [y,m,day] = d.dataEntrega.split('-').map(Number);
-    // Check if any of my subtasks were finished after deadline
+    if (d.status !== 'cliente') return false;
+    const mySts = (d.subtarefas || []).filter(st => st.colaborador === u.nome);
+    const refDate = mySts.length > 0
+      ? (mySts.map(st => st.dataEntrega || st.dataEntregaPrevista || d.dataEntrega).filter(Boolean).sort().reverse()[0] || d.dataEntrega)
+      : d.dataEntrega;
+    if (!refDate) return false;
+    const [y,m,day] = refDate.split('-').map(Number);
     return new Date(y,m-1,day) < new Date();
   });
 
