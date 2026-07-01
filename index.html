@@ -5687,7 +5687,7 @@ function openWfPanel(id) {
         aHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">';
         ca.forEach(f => {
           const isImg = f.url && (f.url.match(/\\.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
-          aHtml += '<div onclick="openLightbox(\\'' + f.url + '\\')" style="cursor:pointer;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:6px;" title="' + (f.nome||'Arquivo') + '">' +
+          aHtml += '<div onclick="openLightbox(\'' + f.url + '\')" style="cursor:pointer;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:6px;" title="' + (f.nome||'Arquivo') + '">' +
             (isImg ? '<img src="' + f.url + '" style="width:36px;height:36px;object-fit:cover;border-radius:3px;">' : '📄 ' + (f.nome||'Arquivo')) +
             '</div>';
         });
