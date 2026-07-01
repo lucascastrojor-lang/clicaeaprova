@@ -12,7 +12,7 @@
   :root {
     --bg-base: #0a0e1a;
     --bg-card: #111827;
-    --bg-card2: #161d2e;
+    --bg-card2: #161d2e;h
     --bg-input: #1a2235;
     --bg-hover: #1e2a40;
     --border: #1e2d4a;
@@ -4622,7 +4622,7 @@ function renderClientPortal() {
       '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Digite seu nome:</div>' +
       '<div style="display:flex;gap:6px;">' +
       '<input id="portalUserNameInput" class="form-input" style="font-size:12px;padding:5px 8px;flex:1;" placeholder="Seu nome..." value="'+(portalCurrentUser||'')+'" onkeydown="if(event.key===\'Enter\')selectPortalUser(this.value)">' +
-      '<button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="selectPortalUser(document.getElementById('portalUserNameInput').value)">✔</button>' +
+      '<button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="selectPortalUser(document.getElementById(\'portalUserNameInput\').value)">✔</button>' +
       '</div></div>';
     const labelEl = document.getElementById('portalCurrentUserLabel');
     if (labelEl) labelEl.textContent = portalCurrentUser || 'Identificar-se ▾';
