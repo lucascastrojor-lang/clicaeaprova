@@ -4553,13 +4553,11 @@ let portalNewAttachSeen = {}; // track which demands client has clicked (purple 
 const WF_TO_CLIENT_STATUS = {
   espera:    'enviado',
   producao:  'emproducao',
-  revisao:   'emproducao',
   aprovacao: 'emproducao',
   cliente:   'emaprovacao',
   reprovado: 'emaprovacao',
   aprovado:  'finalizado',
   finalizado:'finalizado',
-  solicitado_cliente: 'enviado',
 };
 
 const CLIENT_STATUS_LABELS = {
@@ -4612,15 +4610,23 @@ function renderClientPortal() {
   const mktContacts = c.mktContacts || [];
   const userWrap = document.getElementById('portalUserSelectWrap');
   const userDropdown = document.getElementById('portalUserDropdown');
-  if (userWrap && mktContacts.length > 0) {
+  if (userWrap) {
     userWrap.style.display = 'block';
-    userDropdown.innerHTML = mktContacts.map((ct,i) =>
-      '<div class="portal-user-option' + (portalCurrentUser === ct.nome ? ' selected' : '') + '" onclick="selectPortalUser(' + JSON.stringify(ct.nome) + ')">' + ct.nome + (ct.cargo ? ' <span style=\'font-size:10px;color:var(--text-muted);\'>' + ct.cargo + '</span>' : '') + '</div>'
-    ).join('');
+    const baseOpts = mktContacts.length > 0
+      ? mktContacts.map((ct,i) =>
+          '<div class="portal-user-option' + (portalCurrentUser === ct.nome ? ' selected' : '') + '" onclick="selectPortalUser(' + JSON.stringify(ct.nome) + ')">' + ct.nome + (ct.cargo ? ' <span style=\'font-size:10px;color:var(--text-muted);\'>'+ct.cargo+'</span>' : '') + '</div>'
+        ).join('') + '<div style="border-top:1px solid var(--border);margin:4px 2px;"></div>'
+      : '';
+    userDropdown.innerHTML = baseOpts +
+      '<div style="padding:4px 14px 10px;">' +
+      '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Digite seu nome:</div>' +
+      '<div style="display:flex;gap:6px;">' +
+      '<input id="portalUserNameInput" class="form-input" style="font-size:12px;padding:5px 8px;flex:1;" placeholder="Seu nome..." value="'+(portalCurrentUser||'')+'" onkeydown="if(event.key==='Enter')selectPortalUser(this.value)">' +
+      '<button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="selectPortalUser(document.getElementById('portalUserNameInput').value)">✔</button>' +
+      '</div></div>';
     const labelEl = document.getElementById('portalCurrentUserLabel');
     if (labelEl) labelEl.textContent = portalCurrentUser || 'Identificar-se ▾';
   }
-
   // Get demands for this client
   const demands = wfDemands.filter(d => String(d.clienteId) === String(portalClientId));
 
@@ -5381,10 +5387,8 @@ function socialIconsHtml(redes) {
 
 const AREAS = { design:'Design Gráfico', social:'Social Media', av:'Audiovisual', captacao:'Captação de Vídeo', edicao:'Edição de Vídeo', atend:'Atendimento' };
 const WF_COLS = [
-  {id:'solicitado_cliente', label:'Solicitado pelo Cliente', color:'#f59e0b'},
   {id:'espera',    label:'Em Espera',         color:'#4a5a72'},
   {id:'producao',  label:'Produção',           color:'#3b82f6'},
-  {id:'revisao',   label:'Revisão',            color:'#8b5cf6'},
   {id:'aprovacao', label:'Aprovação Interna',  color:'#f97316'},
   {id:'cliente',   label:'Com o Cliente',      color:'#3ddc84'},
   {id:'reprovado', label:'Reprovado',          color:'#ef4444'},
@@ -5536,10 +5540,12 @@ function renderCard(d) {
   const isCancel = d.cancelRequest;
   const isNewAttach = d.novosAnexos;
   const hasClientComments = d.clientComments && d.clientComments.length > 0;
+  const isNeverViewed = !window._wfViewed || !window._wfViewed.has(String(d.id));
   let cardBorder = '';
   let cardBg = '';
   if (isCancel) { cardBorder = 'border-color:var(--red)!important;'; cardBg = 'background:rgba(239,68,68,.06)!important;'; }
   else if (isNewAttach) { cardBorder = 'border-color:var(--purple)!important;'; cardBg = 'background:rgba(168,85,247,.06)!important;'; }
+  else if (isNeverViewed) { cardBorder = 'border-color:var(--orange)!important;'; cardBg = 'background:rgba(249,115,22,.04)!important;'; }
 
   return `<div class="wf-card" ${draggable}
     onclick="if(!isDragging)openWfPanel('${d.id}')"
@@ -5606,6 +5612,11 @@ function renderWfList() {
 // ── DRAG & DROP ──
 let draggedDemandId = null;
 let isDragging = false;
+window._wfViewed = window._wfViewed || new Set(JSON.parse(localStorage.getItem('wfViewed')||'[]'));
+function markDemandViewed(id) {
+  window._wfViewed.add(String(id));
+  try { localStorage.setItem('wfViewed', JSON.stringify([...window._wfViewed])); } catch(e) {}
+}
 
 function onCardDragStart(event, demandId) {
   if (currentUserPerm !== 'total') { event.preventDefault(); return; }
@@ -5658,6 +5669,7 @@ function openWfPanel(id) {
   const d = wfDemands.find(x=>x.id===id);
   if (!d) { console.warn('Demanda não encontrada:', id); return; }
   currentWfDemandId = id;
+  markDemandViewed(id);
   // Clear purple (novosAnexos) when WF team opens the card
   if (d.novosAnexos) {
     d.novosAnexos = false;
@@ -5696,10 +5708,38 @@ function openWfPanel(id) {
       if (cl.length > 0) {
         aHtml += cl.map(lk => '<a href="' + lk + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--blue);margin-right:8px;">🔗 ' + lk + '</a>').join('');
       }
+      // Also add subtask approval files
+      const allSubFiles = (d.subtarefas||[]).flatMap(s => s.aprovacaoFiles||[]);
+      if (allSubFiles.length > 0) {
+        aHtml += '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:8px 0 6px;">🖼️ Aprovações (subtarefas)</div>';
+        aHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+        allSubFiles.forEach(f => {
+          const isImg2 = f.url && (f.url.match(/.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
+          aHtml += '<div onclick="openLightbox(\'' + f.url + '\')" style="cursor:pointer;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:6px;" title="' + (f.nome||'Arquivo') + '">' +
+            (isImg2 ? '<img src="' + f.url + '" style="width:36px;height:36px;object-fit:cover;border-radius:3px;">' : '📄 ' + (f.nome||'Arquivo')) +
+            '</div>';
+        });
+        aHtml += '</div>';
+      }
       wfClientAttachEl.innerHTML = aHtml;
       wfClientAttachEl.style.display = 'block';
     } else {
-      wfClientAttachEl.style.display = 'none';
+      const allSubFiles = (d.subtarefas||[]).flatMap(s => s.aprovacaoFiles||[]);
+      if (allSubFiles.length > 0) {
+        let aHtml = '<div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">🖼️ Aprovações (subtarefas)</div>';
+        aHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+        allSubFiles.forEach(f => {
+          const isImg2 = f.url && (f.url.match(/.(jpg|jpeg|png|gif|webp)/i) || f.url.startsWith('data:image'));
+          aHtml += '<div onclick="openLightbox(\'' + f.url + '\')" style="cursor:pointer;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:6px;" title="' + (f.nome||'Arquivo') + '">' +
+            (isImg2 ? '<img src="' + f.url + '" style="width:36px;height:36px;object-fit:cover;border-radius:3px;">' : '📄 ' + (f.nome||'Arquivo')) +
+            '</div>';
+        });
+        aHtml += '</div>';
+        wfClientAttachEl.innerHTML = aHtml;
+        wfClientAttachEl.style.display = 'block';
+      } else {
+        wfClientAttachEl.style.display = 'none';
+      }
     }
   }
 
@@ -5726,10 +5766,8 @@ function openWfPanel(id) {
   if (statusWrap) {
     if (currentUserPerm === 'total') {
       statusWrap.innerHTML = `<select onchange="wfChangeStatus(this.value)" style="background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:12px;">
-        <option value="solicitado_cliente" ${d.status==='solicitado_cliente'?'selected':''}>Solicitado pelo Cliente</option>
         <option value="espera" ${d.status==='espera'?'selected':''}>Em Espera</option>
         <option value="producao" ${d.status==='producao'?'selected':''}>Produção</option>
-        <option value="revisao" ${d.status==='revisao'?'selected':''}>Revisão</option>
         <option value="aprovacao" ${d.status==='aprovacao'?'selected':''}>Aprovação Interna</option>
         <option value="cliente" ${d.status==='cliente'?'selected':''}>Com o Cliente</option>
         <option value="reprovado" ${d.status==='reprovado'?'selected':''}>Reprovado</option>
@@ -5864,11 +5902,6 @@ function renderSubtasks(d) {
           <label class="form-label">📅 Data de entrega</label>
           <input class="form-input" type="date" value="${s.dataEntrega||''}" ${!isTotal||s.done?'readonly':''}
             oninput="updateStField('${s.id}','dataEntrega',this.value)">
-        </div>
-        <div class="form-group">
-          <label class="form-label">🗓️ Previsão de entrega</label>
-          <input class="form-input" type="date" value="${s.dataEntregaPrevista||''}" ${!isTotal||s.done?'readonly':''}
-            oninput="updateStField('${s.id}','dataEntregaPrevista',this.value)">
         </div>
       </div>
 
@@ -6672,7 +6705,7 @@ function renderProfessionalDashboard() {
   // ── INBOX: demandas solicitadas pelos clientes aguardando gerar job
   // TODO: quando a área do cliente for implementada, conectar as solicitações recebidas via portal
   // do cliente à variável inboxDemands abaixo, filtrando por status='solicitado' na tabela workflow_demandas
-  const inboxDemands = wfDemands.filter(d => d.status === 'solicitado_cliente');
+  const inboxDemands = []; // solicitado_cliente column removed
 
   const sections = [
     {icon:'🎯',title:'Meta de hoje',sub:'Essas aqui é a meta de hoje! Bora lá...',items:todayDemands,color:'var(--accent)',full:false},
@@ -6737,7 +6770,7 @@ function renderProfessionalDashboard() {
     <div class="inbox-title">📥 Solicitação de Novas Demandas <span style="font-size:11px;font-weight:400;color:var(--text-muted);">(enviadas pelos clientes via portal)</span></div>
     ${inboxDemands.length ? inboxDemands.map(d=>{
       const c = DB.clients.find(x=>x.id===d.clienteId);
-      const isUnprocessed = d.status === 'solicitado_cliente';
+      const isUnprocessed = false;
       return `<div class="inbox-item${isUnprocessed ? ' unprocessed' : ''}">
         <div class="inbox-item-info">
           <div class="inbox-item-nome">${d.nome}</div>
@@ -6893,7 +6926,7 @@ function renderAnalyticsColab() {
     if (d.status !== 'cliente') return false;
     const mySts = (d.subtarefas || []).filter(st => st.colaborador === u.nome);
     const refDate = mySts.length > 0
-      ? (mySts.map(st => st.dataEntrega || st.dataEntregaPrevista || d.dataEntrega).filter(Boolean).sort().reverse()[0] || d.dataEntrega)
+      ? (mySts.map(st => st.dataEntrega || d.dataEntrega).filter(Boolean).sort().reverse()[0] || d.dataEntrega)
       : d.dataEntrega;
     if (!refDate) return false;
     const [y,m,day] = refDate.split('-').map(Number);
@@ -6991,7 +7024,7 @@ function renderAnalyticsClient() {
 
   // Inbox demands for this client
   // TODO: quando a área do cliente for implementada, buscar solicitações pendentes do cliente aqui
-  const clientInbox = wfDemands.filter(d => String(d.clienteId) === String(cid) && d.status === 'solicitado_cliente');
+  const clientInbox = []; // solicitado_cliente column removed
 
   el.innerHTML = `
     <div class="analytics-big-numbers">
