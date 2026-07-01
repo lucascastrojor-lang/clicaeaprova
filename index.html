@@ -1569,7 +1569,7 @@
     </div>
     <div class="form-group mt-14">
       <label class="form-label">Senha</label>
-      <input class="form-input" type="password" placeholder="••••••••" id="loginPass" value="123456" onkeydown="if(event.key==='Enter')doLogin()">
+      <input class="form-input" type="password" placeholder="••••••••" id="loginPass" value="123456" onkeydown="if(event.key===\'Enter\')doLogin()">
     </div>
     <button class="btn btn-primary login-btn mt-14" onclick="doLogin()">Entrar</button>
     <div class="login-footer">
@@ -2375,7 +2375,7 @@
         <div style="font-size:14px;font-weight:700;margin-bottom:6px;">Área protegida</div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Digite sua senha para visualizar e editar os acessos do cliente.</div>
         <div style="display:flex;gap:8px;justify-content:center;max-width:280px;margin:0 auto;">
-          <input class="form-input" type="password" id="vaultPasswordInput" placeholder="Sua senha..." style="flex:1;" onkeydown="if(event.key==='Enter')unlockVault()">
+          <input class="form-input" type="password" id="vaultPasswordInput" placeholder="Sua senha..." style="flex:1;" onkeydown="if(event.key===\'Enter\')unlockVault()">
           <button class="btn btn-primary" onclick="unlockVault()">Entrar</button>
         </div>
         <div id="vaultError" style="color:var(--red);font-size:12px;margin-top:8px;display:none;">Senha incorreta.</div>
@@ -4621,7 +4621,7 @@ function renderClientPortal() {
       '<div style="padding:4px 14px 10px;">' +
       '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Digite seu nome:</div>' +
       '<div style="display:flex;gap:6px;">' +
-      '<input id="portalUserNameInput" class="form-input" style="font-size:12px;padding:5px 8px;flex:1;" placeholder="Seu nome..." value="'+(portalCurrentUser||'')+'" onkeydown="if(event.key==='Enter')selectPortalUser(this.value)">' +
+      '<input id="portalUserNameInput" class="form-input" style="font-size:12px;padding:5px 8px;flex:1;" placeholder="Seu nome..." value="'+(portalCurrentUser||'')+'" onkeydown="if(event.key===\'Enter\')selectPortalUser(this.value)">' +
       '<button class="btn btn-primary" style="font-size:11px;padding:4px 10px;" onclick="selectPortalUser(document.getElementById('portalUserNameInput').value)">✔</button>' +
       '</div></div>';
     const labelEl = document.getElementById('portalCurrentUserLabel');
@@ -6144,9 +6144,9 @@ function renderSubtasks(d) {
         </div>
         <div class="approv-link-input-row">
           <input class="form-input" id="ac-link-url-${s.id}" placeholder="https://..." style="flex:1;font-size:12px;"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();addAprovLink('${s.id}')}">
+            onkeydown="if(event.key===\'Enter\'){event.preventDefault();addAprovLink('${s.id}')}">
           <input class="form-input" id="ac-link-label-${s.id}" placeholder="Descrição (opcional)" style="width:140px;font-size:12px;"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();addAprovLink('${s.id}')}">
+            onkeydown="if(event.key===\'Enter\'){event.preventDefault();addAprovLink('${s.id}')}">
           <button class="btn btn-ghost" style="padding:7px 12px;font-size:12px;" onclick="addAprovLink('${s.id}')">+ Link</button>
         </div>
       </div>
